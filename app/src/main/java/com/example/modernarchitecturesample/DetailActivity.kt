@@ -1,10 +1,13 @@
 package com.example.modernarchitecturesample
 
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import coil.load
 import com.example.modernarchitecturesample.model.MovieDetailResponse
 import com.example.modernarchitecturesample.network.ApiInterface
@@ -28,6 +31,7 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var detailImageView: ImageView
     private lateinit var tvTittle: TextView
     private lateinit var tvDescription: TextView
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +42,7 @@ class DetailActivity : AppCompatActivity() {
 
 
     private fun initView() {
+        progressBar = findViewById(R.id.detail_progress_circular)
         detailConstraintLayout = findViewById(R.id.clDetail)
         detailImageView = findViewById(R.id.ivDetail)
         tvTittle = findViewById(R.id.tvTittle)
@@ -73,6 +78,8 @@ class DetailActivity : AppCompatActivity() {
 
 
     private fun getDetailMovie(movieId: Int) {
+        progressBar.visibility = View.VISIBLE
+
         provideApiInterface().getDetailMovie(movieId = movieId)
             .enqueue(object : Callback<MovieDetailResponse> {
                 override fun onResponse(
@@ -80,6 +87,9 @@ class DetailActivity : AppCompatActivity() {
                     response: Response<MovieDetailResponse>
                 ) {
                     if (response.isSuccessful) {
+                        if (progressBar.isVisible){
+                            progressBar.visibility = View.GONE
+                        }
                         val data = response.body()
                         if (data != null) {
                             tvDescription.text = data.overview
@@ -96,7 +106,9 @@ class DetailActivity : AppCompatActivity() {
                     call: Call<MovieDetailResponse>,
                     t: Throwable
                 ) {
-                    Timber.e(t.localizedMessage ?: "Error")
+                    if (progressBar.isVisible){
+                        progressBar.visibility = View.GONE
+                    }
                     Snackbar.make(
                         this@DetailActivity,
                         detailConstraintLayout,
