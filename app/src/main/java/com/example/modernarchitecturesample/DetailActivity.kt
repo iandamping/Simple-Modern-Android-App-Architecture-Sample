@@ -1,15 +1,13 @@
 package com.example.modernarchitecturesample
 
-import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.modernarchitecturesample.adapter.MovieAdapter
-import com.example.modernarchitecturesample.model.MovieResponse
+import coil.load
+import com.example.modernarchitecturesample.model.MovieDetailResponse
 import com.example.modernarchitecturesample.network.ApiInterface
-import com.example.modernarchitecturesample.network.MainResponse
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -21,28 +19,29 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
-    private lateinit var movieRecyclerView: RecyclerView
-    private lateinit var mainConstraintLayout: ConstraintLayout
-    private val movieAdapter: MovieAdapter = MovieAdapter(this)
+class DetailActivity : AppCompatActivity() {
+    private val imageFormatter = "https://image.tmdb.org/t/p/w500"
+    private lateinit var detailConstraintLayout: ConstraintLayout
+    private lateinit var detailImageView: ImageView
+    private lateinit var tvTittle: TextView
+    private lateinit var tvDescription: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_detail)
         initView()
-        getMovie()
+        getDetailMovie(intent.getIntExtra("movie_id", 0))
     }
 
+
     private fun initView() {
-        mainConstraintLayout = findViewById(R.id.clMain)
-        movieRecyclerView = findViewById(R.id.rvMovie)
-        movieRecyclerView.apply {
-            layoutManager =
-                LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
-            adapter = movieAdapter
-        }
+        detailConstraintLayout = findViewById(R.id.clDetail)
+        detailImageView = findViewById(R.id.ivDetail)
+        tvTittle = findViewById(R.id.tvTittle)
+        tvDescription = findViewById(R.id.tvDescription)
     }
 
     private fun provideApiInterface(): ApiInterface {
@@ -50,7 +49,6 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
-
         val httpClient = OkHttpClient.Builder()
             .connectTimeout(60L, TimeUnit.SECONDS)
             .writeTimeout(60L, TimeUnit.SECONDS)
@@ -74,32 +72,34 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
     }
 
 
-    private fun getMovie() {
-        provideApiInterface().getPopularMovie()
-            .enqueue(object : Callback<MainResponse<MovieResponse>> {
+    private fun getDetailMovie(movieId: Int) {
+        provideApiInterface().getDetailMovie(movieId = movieId)
+            .enqueue(object : Callback<MovieDetailResponse> {
                 override fun onResponse(
-                    call: Call<MainResponse<MovieResponse>>,
-                    response: Response<MainResponse<MovieResponse>>
+                    call: Call<MovieDetailResponse>,
+                    response: Response<MovieDetailResponse>
                 ) {
                     if (response.isSuccessful) {
-                        val data = response.body()?.results
-                        if (!data.isNullOrEmpty()) {
-                            movieAdapter.submitList(data)
-                        } else {
-                            Snackbar.make(
-                                this@MainActivity,
-                                mainConstraintLayout,
-                                "Error empty data",
-                                Snackbar.LENGTH_SHORT
-                            ).show()
+                        val data = response.body()
+                        if (data != null) {
+                            tvDescription.text = data.overview
+                            tvTittle.text = data.title
+                            detailImageView.load(imageFormatter + data.backdropPath) {
+                                placeholder(R.drawable.ic_placeholder)
+                                error(R.drawable.ic_error)
+                            }
                         }
                     }
                 }
 
-                override fun onFailure(call: Call<MainResponse<MovieResponse>>, t: Throwable) {
+                override fun onFailure(
+                    call: Call<MovieDetailResponse>,
+                    t: Throwable
+                ) {
+                    Timber.e(t.localizedMessage ?: "Error")
                     Snackbar.make(
-                        this@MainActivity,
-                        mainConstraintLayout,
+                        this@DetailActivity,
+                        detailConstraintLayout,
                         t.localizedMessage ?: "Error",
                         Snackbar.LENGTH_SHORT
                     ).show()
@@ -107,14 +107,4 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
 
             })
     }
-
-    override fun onClicked(data: MovieResponse) {
-        val intent = Intent(this, DetailActivity::class.java)
-        intent.putExtra("movie_id", data.id)
-        startActivity(intent)
-    }
-
 }
-
-
-

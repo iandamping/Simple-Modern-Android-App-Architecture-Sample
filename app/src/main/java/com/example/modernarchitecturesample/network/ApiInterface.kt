@@ -15,7 +15,7 @@ interface ApiInterface {
     fun getDetailMovie(
         @Path("movie") movieId: Int,
         @Query("api_key") apiKey: String  = api_key
-    ): Call<MainResponse<MovieDetailResponse>>
+    ): Call<MovieDetailResponse>
 
 
     companion object{
