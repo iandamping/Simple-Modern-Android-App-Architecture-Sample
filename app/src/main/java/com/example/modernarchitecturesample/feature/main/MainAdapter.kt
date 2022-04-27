@@ -1,4 +1,4 @@
-package com.example.modernarchitecturesample.adapter
+package com.example.modernarchitecturesample.feature.main
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,16 +7,16 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.modernarchitecturesample.R
+import com.example.modernarchitecturesample.core.repository.model.Movie
 import com.example.modernarchitecturesample.databinding.ItemMovieBinding
-import com.example.modernarchitecturesample.model.MovieResponse
 
-class MovieAdapter(
+class MainAdapter(
     private val listener: MovieAdapterListener
 ) :
-    ListAdapter<MovieResponse, MovieAdapter.MovieViewHolder>(listMoviedapterCallback) {
+    ListAdapter<Movie, MainAdapter.MovieViewHolder>(listMoviedapterCallback) {
 
     interface MovieAdapterListener {
-        fun onClicked(data: MovieResponse)
+        fun onClicked(data: Movie)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
@@ -41,29 +41,21 @@ class MovieAdapter(
         private val binding: ItemMovieBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private val imageFormatter = "https://image.tmdb.org/t/p/w500"
-
-        fun bind(data: MovieResponse) {
-            with(binding) {
-                ivMovieImage.load(imageFormatter + data.backdrop_path) {
-                    placeholder(R.drawable.ic_placeholder)
-                    error(R.drawable.ic_error)
-                }
-                tvMovieName.text = data.title
-                tvMovieReleaseDate.text = data.overview
-            }
+        fun bind(data: Movie) {
+            binding.movie = data
+            binding.executePendingBindings()
         }
     }
 
     companion object {
-        val listMoviedapterCallback = object : DiffUtil.ItemCallback<MovieResponse>() {
-            override fun areItemsTheSame(oldItem: MovieResponse, newItem: MovieResponse): Boolean {
+        val listMoviedapterCallback = object : DiffUtil.ItemCallback<Movie>() {
+            override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
                 return oldItem.id == newItem.id
             }
 
             override fun areContentsTheSame(
-                oldItem: MovieResponse,
-                newItem: MovieResponse
+                oldItem: Movie,
+                newItem: Movie
             ): Boolean {
                 return oldItem.poster_path == newItem.poster_path
             }

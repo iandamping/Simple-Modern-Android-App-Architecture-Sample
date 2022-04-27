@@ -1,4 +1,4 @@
-package com.example.modernarchitecturesample.network
+package com.example.modernarchitecturesample.core.datasource.remote.network.response
 
 import com.squareup.moshi.Json
 
