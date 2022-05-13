@@ -1,5 +1,7 @@
 package com.example.modernarchitecturesample.di
 
+import com.example.modernarchitecturesample.core.datasource.cache.CacheDataSource
+import com.example.modernarchitecturesample.core.datasource.cache.CacheDataSourceImpl
 import com.example.modernarchitecturesample.core.datasource.remote.RemoteDataSource
 import com.example.modernarchitecturesample.core.datasource.remote.RemoteDataSourceImpl
 import dagger.Binds
@@ -14,5 +16,10 @@ interface DataSourceModule {
 
     @Binds
     @Singleton
-    fun provideRemoteDataSource(source:RemoteDataSourceImpl):RemoteDataSource
+    fun provideRemoteDataSource(source: RemoteDataSourceImpl): RemoteDataSource
+
+
+    @Binds
+    @Singleton
+    fun provideCacheDataSource(source: CacheDataSourceImpl): CacheDataSource
 }
