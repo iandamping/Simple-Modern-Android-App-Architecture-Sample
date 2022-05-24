@@ -5,15 +5,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import com.example.modernarchitecturesample.R
 import com.example.modernarchitecturesample.core.repository.model.Movie
 import com.example.modernarchitecturesample.databinding.ItemMovieBinding
 
-class MovieAdapter(
+class MainAdapter(
     private val listener: MovieAdapterListener
 ) :
-    ListAdapter<Movie, MovieAdapter.MovieViewHolder>(listMoviedapterCallback) {
+    ListAdapter<Movie, MainAdapter.MovieViewHolder>(listMoviedapterCallback) {
 
     interface MovieAdapterListener {
         fun onClicked(data: Movie)
@@ -42,14 +40,8 @@ class MovieAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(data: Movie) {
-            with(binding) {
-                ivMovieImage.load(data.poster_path) {
-                    placeholder(R.drawable.ic_placeholder)
-                    error(R.drawable.ic_error)
-                }
-                tvMovieName.text = data.title
-                tvMovieReleaseDate.text = data.overview
-            }
+            binding.movie = data
+            binding.executePendingBindings()
         }
     }
 

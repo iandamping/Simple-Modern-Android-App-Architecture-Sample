@@ -7,28 +7,26 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.example.modernarchitecturesample.R
 import com.example.modernarchitecturesample.core.DataProvider
+import com.example.modernarchitecturesample.databinding.ActivityDetailBinding
 import com.example.modernarchitecturesample.util.launchAndCollectIn
 import com.google.android.material.snackbar.Snackbar
 
 class DetailActivity : AppCompatActivity() {
-
+    private lateinit var binding: ActivityDetailBinding
     private lateinit var viewModelFactory: DetailViewModelFactory
     private lateinit var viewModel: DetailViewModel
 
-    private lateinit var detailConstraintLayout: ConstraintLayout
-    private lateinit var detailImageView: ImageView
-    private lateinit var tvTittle: TextView
-    private lateinit var tvDescription: TextView
-    private lateinit var progressBar: ProgressBar
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_detail)
+        binding = ActivityDetailBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         viewModelFactory = DetailViewModelFactory(DataProvider.provideRepository())
         viewModel = ViewModelProvider(
             owner = this,
@@ -37,46 +35,39 @@ class DetailActivity : AppCompatActivity() {
 
         viewModel.setMovieId(intent.getIntExtra("movie_id", 0))
 
-        initView()
-        getDetailMovie()
+        observeState(binding)
     }
 
 
-    private fun initView() {
-        progressBar = findViewById(R.id.detail_progress_circular)
-        detailConstraintLayout = findViewById(R.id.clDetail)
-        detailImageView = findViewById(R.id.ivDetail)
-        tvTittle = findViewById(R.id.tvTittle)
-        tvDescription = findViewById(R.id.tvDescription)
-    }
 
-    private fun getDetailMovie() {
+    private fun observeState(binding: ActivityDetailBinding) {
         viewModel.uiState.launchAndCollectIn(this, Lifecycle.State.STARTED) {
             when {
                 it.data != null -> {
-                    val data = it.data
-                    tvDescription.text = data.overview
-                    tvTittle.text = data.title
-                    detailImageView.load(data.backdropPath) {
-                        placeholder(R.drawable.ic_placeholder)
-                        error(R.drawable.ic_error)
+                    with(binding){
+                        ivDetail.load(it.data.backdropPath) {
+                            placeholder(R.drawable.ic_placeholder)
+                            error(R.drawable.ic_error)
+                        }
+                        tvTittle.text = it.data.title
+                        tvDescription.text = it.data.overview
                     }
+
                 }
                 it.errorMessage.isNotEmpty() -> {
                     Snackbar.make(
                         this@DetailActivity,
-                        detailConstraintLayout,
+                        binding.root,
                         it.errorMessage,
                         Snackbar.LENGTH_SHORT
                     ).show()
                 }
             }
-
-            if (it.isLoading){
-                progressBar.visibility = View.VISIBLE
-            }else{
-                progressBar.visibility = View.GONE
-            }
+            if (!it.isLoading) {
+                if (binding.detailProgressCircular.isVisible) {
+                    binding.detailProgressCircular.visibility = View.GONE
+                }
+            } else binding.detailProgressCircular.visibility = View.VISIBLE
         }
     }
 }
