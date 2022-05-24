@@ -9,32 +9,24 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.modernarchitecturesample.core.DataProvider
+import com.example.modernarchitecturesample.core.repository.model.Movie
+import com.example.modernarchitecturesample.core.repository.model.Results
 import com.example.modernarchitecturesample.databinding.ItemMovieBinding
-import com.example.modernarchitecturesample.model.MovieResponse
-import com.example.modernarchitecturesample.network.ApiInterface
-import com.example.modernarchitecturesample.network.MainResponse
 import com.google.android.material.snackbar.Snackbar
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import okhttp3.Dispatcher
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
     private lateinit var movieRecyclerView: RecyclerView
     private lateinit var mainConstraintLayout: ConstraintLayout
-    private lateinit var progressBar:ProgressBar
+    private lateinit var progressBar: ProgressBar
     private val movieAdapter: MovieAdapter = MovieAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,79 +47,47 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
         }
     }
 
-    private fun provideApiInterface(): ApiInterface {
-        val baseUrl = "https://api.themoviedb.org/3/"
-        val moshi = Moshi.Builder()
-            .add(KotlinJsonAdapterFactory())
-            .build()
-
-        val httpClient = OkHttpClient.Builder()
-            .connectTimeout(60L, TimeUnit.SECONDS)
-            .writeTimeout(60L, TimeUnit.SECONDS)
-            .readTimeout(60L, TimeUnit.SECONDS)
-            .dispatcher(Dispatcher().apply {
-                maxRequests = 20
-                maxRequestsPerHost = 20
-            })
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            })
-            .addInterceptor { chain ->
-                chain.run { proceed(this.request().newBuilder().build()) }
-            }.build()
-        return Retrofit.Builder()
-            .client(httpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .baseUrl(baseUrl)
-            .build()
-            .create(ApiInterface::class.java)
-    }
-
 
     private fun getMovie() {
         progressBar.visibility = View.VISIBLE
-
-        provideApiInterface().getPopularMovie()
-            .enqueue(object : Callback<MainResponse<MovieResponse>> {
-                override fun onResponse(
-                    call: Call<MainResponse<MovieResponse>>,
-                    response: Response<MainResponse<MovieResponse>>
-                ) {
-                    if (response.isSuccessful) {
-                        if (progressBar.isVisible){
-                            progressBar.visibility = View.GONE
-                        }
-                        val data = response.body()?.results
-                        if (!data.isNullOrEmpty()) {
-                            movieAdapter.submitList(data)
-                        } else {
-                            Snackbar.make(
-                                this@MainActivity,
-                                mainConstraintLayout,
-                                "Error empty data",
-                                Snackbar.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<MainResponse<MovieResponse>>, t: Throwable) {
-                    if (progressBar.isVisible){
+        lifecycleScope.launch {
+            when (val response = DataProvider.provideRepository().getRemoteMovie()) {
+                is Results.Error -> {
+                    if (progressBar.isVisible) {
                         progressBar.visibility = View.GONE
                     }
+                    Timber.e("error : ${response.message}")
 
                     Snackbar.make(
                         this@MainActivity,
                         mainConstraintLayout,
-                        t.localizedMessage ?: "Error",
+                        response.message,
                         Snackbar.LENGTH_SHORT
                     ).show()
                 }
+                is Results.Success -> {
+                    if (progressBar.isVisible) {
+                        progressBar.visibility = View.GONE
+                    }
+                    val data = response.data
+                    if (data.isNotEmpty()) {
+                        movieAdapter.submitList(data)
+                    } else {
 
-            })
+                        Snackbar.make(
+                            this@MainActivity,
+                            mainConstraintLayout,
+                            "Error empty data",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+
     }
 
-    override fun onClicked(data: MovieResponse) {
+    override fun onClicked(data: Movie) {
         val intent = Intent(this, DetailActivity::class.java)
         intent.putExtra("movie_id", data.id)
         startActivity(intent)
@@ -138,10 +98,10 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
 class MovieAdapter(
     private val listener: MovieAdapterListener
 ) :
-    ListAdapter<MovieResponse, MovieAdapter.MovieViewHolder>(listMoviedapterCallback) {
+    ListAdapter<Movie, MovieAdapter.MovieViewHolder>(listMoviedapterCallback) {
 
     interface MovieAdapterListener {
-        fun onClicked(data: MovieResponse)
+        fun onClicked(data: Movie)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
@@ -166,11 +126,9 @@ class MovieAdapter(
         private val binding: ItemMovieBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private val imageFormatter = "https://image.tmdb.org/t/p/w500"
-
-        fun bind(data: MovieResponse) {
+        fun bind(data: Movie) {
             with(binding) {
-                ivMovieImage.load(imageFormatter + data.backdrop_path) {
+                ivMovieImage.load(data.poster_path) {
                     placeholder(R.drawable.ic_placeholder)
                     error(R.drawable.ic_error)
                 }
@@ -181,14 +139,14 @@ class MovieAdapter(
     }
 
     companion object {
-        val listMoviedapterCallback = object : DiffUtil.ItemCallback<MovieResponse>() {
-            override fun areItemsTheSame(oldItem: MovieResponse, newItem: MovieResponse): Boolean {
+        val listMoviedapterCallback = object : DiffUtil.ItemCallback<Movie>() {
+            override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
                 return oldItem.id == newItem.id
             }
 
             override fun areContentsTheSame(
-                oldItem: MovieResponse,
-                newItem: MovieResponse
+                oldItem: Movie,
+                newItem: Movie
             ): Boolean {
                 return oldItem.poster_path == newItem.poster_path
             }
