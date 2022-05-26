@@ -15,13 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.example.modernarchitecturesample.core.DataProvider
-import com.example.modernarchitecturesample.core.repository.model.Movie
+import com.example.modernarchitecturesample.core.datasource.model.Movie
 import com.example.modernarchitecturesample.core.repository.model.Results
 import com.example.modernarchitecturesample.databinding.ItemMovieBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
     private lateinit var movieRecyclerView: RecyclerView
@@ -51,35 +49,24 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
     private fun getMovie() {
         progressBar.visibility = View.VISIBLE
         lifecycleScope.launch {
-            when (val response = DataProvider.provideRepository().getRemoteMovie()) {
-                is Results.Error -> {
-                    if (progressBar.isVisible) {
-                        progressBar.visibility = View.GONE
-                    }
-                    Timber.e("error : ${response.message}")
-
-                    Snackbar.make(
-                        this@MainActivity,
-                        mainConstraintLayout,
-                        response.message,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                }
-                is Results.Success -> {
-                    if (progressBar.isVisible) {
-                        progressBar.visibility = View.GONE
-                    }
-                    val data = response.data
-                    if (data.isNotEmpty()) {
-                        movieAdapter.submitList(data)
-                    } else {
-
+            (application as MainApplication).dataProvider.provideRepository().getCacheMovie.collect { result ->
+                when (result) {
+                    is Results.Error -> {
+                        if (progressBar.isVisible) {
+                            progressBar.visibility = View.GONE
+                        }
                         Snackbar.make(
                             this@MainActivity,
                             mainConstraintLayout,
-                            "Error empty data",
+                            result.message,
                             Snackbar.LENGTH_SHORT
                         ).show()
+                    }
+                    is Results.Success -> {
+                        if (progressBar.isVisible) {
+                            progressBar.visibility = View.GONE
+                        }
+                        movieAdapter.submitList(result.data)
                     }
                 }
             }

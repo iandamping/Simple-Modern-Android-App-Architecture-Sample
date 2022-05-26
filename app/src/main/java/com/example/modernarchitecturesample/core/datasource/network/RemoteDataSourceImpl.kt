@@ -1,8 +1,8 @@
-package com.example.modernarchitecturesample.core.datasource
+package com.example.modernarchitecturesample.core.datasource.network
 
-import com.example.modernarchitecturesample.core.datasource.model.MovieDetailResponse
-import com.example.modernarchitecturesample.core.datasource.model.MovieResponse
-import com.example.modernarchitecturesample.core.datasource.network.ApiInterface
+import com.example.modernarchitecturesample.core.datasource.network.model.MovieDetailResponse
+import com.example.modernarchitecturesample.core.datasource.network.model.MovieResponse
+import com.example.modernarchitecturesample.core.datasource.network.rest.ApiInterface
 
 class RemoteDataSourceImpl(private val api: ApiInterface) : RemoteDataSource {
 
