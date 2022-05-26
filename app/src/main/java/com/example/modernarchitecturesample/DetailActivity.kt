@@ -13,6 +13,7 @@ import coil.load
 import com.example.modernarchitecturesample.core.repository.model.Results
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class DetailActivity : AppCompatActivity() {
     private lateinit var detailConstraintLayout: ConstraintLayout
