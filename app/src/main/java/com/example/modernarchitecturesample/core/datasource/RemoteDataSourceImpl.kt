@@ -14,9 +14,9 @@ class RemoteDataSourceImpl(private val api: ApiInterface) : RemoteDataSource {
                 if (!body.isNullOrEmpty()) {
                     body
                 } else {
-                    throw Exception("body is null")
+                    throw Exception("No result available")
                 }
-            } else throw Exception("call is not success")
+            } else throw Exception("Application encounter problem with the server")
 
         } catch (e: Exception) {
             throw e
@@ -27,8 +27,8 @@ class RemoteDataSourceImpl(private val api: ApiInterface) : RemoteDataSource {
         try {
             val response = api.getDetailMovie(movieId)
             return if (response.isSuccessful) {
-                response.body() ?: throw Exception("body is null")
-            } else throw Exception("call is not success")
+                response.body() ?: throw Exception("No result available")
+            } else throw Exception("Application encounter problem with the server")
 
         } catch (e: Exception) {
             throw e
