@@ -24,7 +24,7 @@ class DataProvider(private val context: Context) {
     fun provideRepository(): MovieRepository {
         return MovieRepositoryImpl(
             remoteSource = provideRemoteDatasource(),
-            cacheSource = provideCacheDataSource(),
+            localSource = provideCacheDataSource(),
             networkUtils = NetworkUtilProvider(context).provideNetworkUtil()
         )
     }
