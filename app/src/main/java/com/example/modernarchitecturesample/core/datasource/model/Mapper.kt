@@ -28,6 +28,12 @@ fun MovieResponse.mapToDatabase(): MovieEntity = MovieEntity(
     originalTitle = originalTitle,
     backdrop_path = backdrop_path,
     overview = overview,
+    voteCount = vote_count,
+    video = video,
+    popularity = popularity,
+    originalLanguage = original_language,
+    adult = adult,
+    releaseDate = release_date,
     timestamp = System.currentTimeMillis()
 )
 
