@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
 
-
     val getCacheMovie: Flow<Results<List<Movie>>>
 
     suspend fun getDetailMovie(movieId: Int): Results<MovieDetail>

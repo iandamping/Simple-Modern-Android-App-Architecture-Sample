@@ -16,10 +16,6 @@ class MovieRepositoryImpl(
     private val networkUtils: NetworkUtils
 ) : MovieRepository {
 
-    companion object {
-        private val CACHE_EXPIRY = TimeUnit.HOURS.toMillis(1)
-    }
-
     private fun Long.isExpired(): Boolean = (System.currentTimeMillis() - this) > CACHE_EXPIRY
 
     override val getCacheMovie: Flow<Results<List<Movie>>>
@@ -60,4 +56,10 @@ class MovieRepositoryImpl(
             Results.Error(e.localizedMessage ?: "Error")
         }
     }
+
+    companion object {
+        private val CACHE_EXPIRY = TimeUnit.HOURS.toMillis(1)
+    }
+
+
 }
