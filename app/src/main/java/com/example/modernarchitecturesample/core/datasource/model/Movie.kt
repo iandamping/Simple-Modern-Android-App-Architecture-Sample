@@ -1,4 +1,4 @@
-package com.example.modernarchitecturesample.core.repository.model
+package com.example.modernarchitecturesample.core.datasource.model
 
 data class Movie(
     val id: Int,

@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.modernarchitecturesample.core.repository.model.Movie
+import com.example.modernarchitecturesample.core.datasource.model.Movie
 import com.example.modernarchitecturesample.databinding.ItemMovieBinding
 
 class MainAdapter(

@@ -5,8 +5,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import com.example.modernarchitecturesample.core.DataProvider
-import com.example.modernarchitecturesample.core.repository.model.Movie
+import com.example.modernarchitecturesample.MainApplication
+import com.example.modernarchitecturesample.core.datasource.model.Movie
 import com.example.modernarchitecturesample.databinding.ActivityMainBinding
 import com.example.modernarchitecturesample.feature.detail.DetailActivity
 import com.example.modernarchitecturesample.util.launchAndCollectIn
@@ -22,7 +22,8 @@ class MainActivity : AppCompatActivity(), MainAdapter.MovieAdapterListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModelFactory = MainViewModelFactory(DataProvider.provideRepository())
+        viewModelFactory =
+            MainViewModelFactory((application as MainApplication).dataProvider.provideRepository())
         viewModel = ViewModelProvider(
             owner = this,
             factory = viewModelFactory

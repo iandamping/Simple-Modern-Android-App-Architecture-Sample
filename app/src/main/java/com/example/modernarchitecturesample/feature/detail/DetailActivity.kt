@@ -2,17 +2,13 @@ package com.example.modernarchitecturesample.feature.detail
 
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import coil.load
+import com.example.modernarchitecturesample.MainApplication
 import com.example.modernarchitecturesample.R
-import com.example.modernarchitecturesample.core.DataProvider
 import com.example.modernarchitecturesample.databinding.ActivityDetailBinding
 import com.example.modernarchitecturesample.util.launchAndCollectIn
 import com.google.android.material.snackbar.Snackbar
@@ -27,7 +23,8 @@ class DetailActivity : AppCompatActivity() {
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModelFactory = DetailViewModelFactory(DataProvider.provideRepository())
+        viewModelFactory =
+            DetailViewModelFactory((application as MainApplication).dataProvider.provideRepository())
         viewModel = ViewModelProvider(
             owner = this,
             factory = viewModelFactory
@@ -39,12 +36,11 @@ class DetailActivity : AppCompatActivity() {
     }
 
 
-
     private fun observeState(binding: ActivityDetailBinding) {
         viewModel.uiState.launchAndCollectIn(this, Lifecycle.State.STARTED) {
             when {
                 it.data != null -> {
-                    with(binding){
+                    with(binding) {
                         ivDetail.load(it.data.backdropPath) {
                             placeholder(R.drawable.ic_placeholder)
                             error(R.drawable.ic_error)
