@@ -1,11 +1,11 @@
-package com.example.modernarchitecturesample.core.datasource.cache
+package com.example.modernarchitecturesample.core.datasource.local
 
-import com.example.modernarchitecturesample.core.datasource.cache.db.MovieDao
-import com.example.modernarchitecturesample.core.datasource.cache.model.MovieEntity
+import com.example.modernarchitecturesample.core.datasource.local.db.MovieDao
+import com.example.modernarchitecturesample.core.datasource.local.model.MovieEntity
 import kotlinx.coroutines.flow.Flow
 
 
-class CacheDataSourceImpl(private val dao: MovieDao) : CacheDataSource {
+class LocalDataSourceImpl(private val dao: MovieDao) : LocalDataSource {
     override fun loadMovie(): Flow<List<MovieEntity>> {
         return dao.loadMovie()
     }

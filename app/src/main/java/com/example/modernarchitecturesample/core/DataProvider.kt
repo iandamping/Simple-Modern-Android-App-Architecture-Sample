@@ -1,9 +1,9 @@
 package com.example.modernarchitecturesample.core
 
 import android.content.Context
-import com.example.modernarchitecturesample.core.datasource.cache.CacheDataSource
-import com.example.modernarchitecturesample.core.datasource.cache.CacheDataSourceImpl
-import com.example.modernarchitecturesample.core.datasource.cache.db.DatabaseProvider
+import com.example.modernarchitecturesample.core.datasource.local.LocalDataSource
+import com.example.modernarchitecturesample.core.datasource.local.LocalDataSourceImpl
+import com.example.modernarchitecturesample.core.datasource.local.db.DatabaseProvider
 import com.example.modernarchitecturesample.core.datasource.network.RemoteDataSource
 import com.example.modernarchitecturesample.core.datasource.network.RemoteDataSourceImpl
 import com.example.modernarchitecturesample.core.datasource.network.rest.NetworkProvider
@@ -17,8 +17,8 @@ class DataProvider(private val context: Context) {
         return RemoteDataSourceImpl(NetworkProvider.provideApiInterface())
     }
 
-    private fun provideCacheDataSource(): CacheDataSource {
-        return CacheDataSourceImpl(DatabaseProvider(context).provideMovieDatabase().movieDao())
+    private fun provideCacheDataSource(): LocalDataSource {
+        return LocalDataSourceImpl(DatabaseProvider(context).provideMovieDatabase().movieDao())
     }
 
     fun provideRepository(): MovieRepository {

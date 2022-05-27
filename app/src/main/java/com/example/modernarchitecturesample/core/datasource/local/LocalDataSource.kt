@@ -1,9 +1,9 @@
-package com.example.modernarchitecturesample.core.datasource.cache
+package com.example.modernarchitecturesample.core.datasource.local
 
-import com.example.modernarchitecturesample.core.datasource.cache.model.MovieEntity
+import com.example.modernarchitecturesample.core.datasource.local.model.MovieEntity
 import kotlinx.coroutines.flow.Flow
 
-interface CacheDataSource {
+interface LocalDataSource {
 
     fun loadMovie(): Flow<List<MovieEntity>>
 

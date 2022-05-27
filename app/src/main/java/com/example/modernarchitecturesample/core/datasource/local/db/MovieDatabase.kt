@@ -1,10 +1,10 @@
-package com.example.modernarchitecturesample.core.datasource.cache.db
+package com.example.modernarchitecturesample.core.datasource.local.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.modernarchitecturesample.core.datasource.cache.model.MovieEntity
+import com.example.modernarchitecturesample.core.datasource.local.model.MovieEntity
 
 @Database(
     entities = [MovieEntity::class],

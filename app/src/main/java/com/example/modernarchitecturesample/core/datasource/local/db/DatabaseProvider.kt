@@ -1,4 +1,4 @@
-package com.example.modernarchitecturesample.core.datasource.cache.db
+package com.example.modernarchitecturesample.core.datasource.local.db
 
 import android.content.Context
 

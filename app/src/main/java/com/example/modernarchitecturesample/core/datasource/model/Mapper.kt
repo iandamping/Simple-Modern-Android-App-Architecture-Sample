@@ -1,6 +1,6 @@
 package com.example.modernarchitecturesample.core.datasource.model
 
-import com.example.modernarchitecturesample.core.datasource.cache.model.MovieEntity
+import com.example.modernarchitecturesample.core.datasource.local.model.MovieEntity
 import com.example.modernarchitecturesample.core.datasource.network.model.MovieDetailResponse
 import com.example.modernarchitecturesample.core.datasource.network.model.MovieResponse
 import com.example.modernarchitecturesample.core.datasource.network.rest.ApiInterface.Companion.imageFormatter

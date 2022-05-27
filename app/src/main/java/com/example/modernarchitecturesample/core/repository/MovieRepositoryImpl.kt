@@ -1,6 +1,6 @@
 package com.example.modernarchitecturesample.core.repository
 
-import com.example.modernarchitecturesample.core.datasource.cache.CacheDataSource
+import com.example.modernarchitecturesample.core.datasource.local.LocalDataSource
 import com.example.modernarchitecturesample.core.datasource.model.*
 import com.example.modernarchitecturesample.core.datasource.network.RemoteDataSource
 import com.example.modernarchitecturesample.core.datasource.network.util.NetworkUtils
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 
 class MovieRepositoryImpl(
     private val remoteSource: RemoteDataSource,
-    private val cacheSource: CacheDataSource,
+    private val localSource: LocalDataSource,
     private val networkUtils: NetworkUtils
 ) : MovieRepository {
 
@@ -23,13 +23,13 @@ class MovieRepositoryImpl(
     private fun Long.isExpired(): Boolean = (System.currentTimeMillis() - this) > CACHE_EXPIRY
 
     override val getCacheMovie: Flow<Results<List<Movie>>>
-        get() = cacheSource.loadMovie().map { cacheValue ->
+        get() = localSource.loadMovie().map { cacheValue ->
             if (cacheValue.isEmpty()) {
                 if (!networkUtils.hasNetworkConnection()) {
                     Results.Error("No internet connection")
                 } else {
                     val cacheData = remoteSource.getMovie()
-                    cacheSource.insertMovie(*cacheData.mapListToDatabase().toTypedArray())
+                    localSource.insertMovie(*cacheData.mapListToDatabase().toTypedArray())
                     Results.Success(cacheData.mapListMovieToRepository())
                 }
             } else {
@@ -39,8 +39,8 @@ class MovieRepositoryImpl(
                     if (cacheValue.first().timestamp.isExpired()) {
                         val cacheData = remoteSource.getMovie()
 
-                        cacheSource.deleteAllMovie()
-                        cacheSource.insertMovie(
+                        localSource.deleteAllMovie()
+                        localSource.insertMovie(
                             *cacheData.mapListToDatabase().toTypedArray()
                         )
                         Results.Success(cacheData.mapListMovieToRepository())

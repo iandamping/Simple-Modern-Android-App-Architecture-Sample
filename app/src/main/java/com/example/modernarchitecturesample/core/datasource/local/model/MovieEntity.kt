@@ -1,4 +1,4 @@
-package com.example.modernarchitecturesample.core.datasource.cache.model
+package com.example.modernarchitecturesample.core.datasource.local.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

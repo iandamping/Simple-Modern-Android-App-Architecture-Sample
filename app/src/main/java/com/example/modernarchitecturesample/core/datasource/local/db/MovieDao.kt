@@ -1,10 +1,10 @@
-package com.example.modernarchitecturesample.core.datasource.cache.db
+package com.example.modernarchitecturesample.core.datasource.local.db
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.modernarchitecturesample.core.datasource.cache.model.MovieEntity
+import com.example.modernarchitecturesample.core.datasource.local.model.MovieEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
