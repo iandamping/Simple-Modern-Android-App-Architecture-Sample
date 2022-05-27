@@ -6,6 +6,7 @@ import com.example.modernarchitecturesample.core.datasource.network.RemoteDataSo
 import com.example.modernarchitecturesample.core.datasource.network.util.NetworkUtils
 import com.example.modernarchitecturesample.core.repository.model.Results
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.util.concurrent.TimeUnit
 
@@ -47,6 +48,8 @@ class MovieRepositoryImpl(
                 }
 
             }
+        }.catch {
+            Results.Error(it.localizedMessage)
         }
 
     override suspend fun getDetailMovie(movieId: Int): Results<MovieDetail> {
