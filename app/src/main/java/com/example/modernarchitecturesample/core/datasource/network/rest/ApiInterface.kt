@@ -1,8 +1,8 @@
-package com.example.modernarchitecturesample.core.datasource.network
+package com.example.modernarchitecturesample.core.datasource.network.rest
 
-import com.example.modernarchitecturesample.core.datasource.model.MovieDetailResponse
-import com.example.modernarchitecturesample.core.datasource.model.MovieResponse
-import retrofit2.Call
+import com.example.modernarchitecturesample.core.datasource.network.model.MovieDetailResponse
+import com.example.modernarchitecturesample.core.datasource.network.model.MovieResponse
+import com.example.modernarchitecturesample.core.datasource.network.model.MainResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

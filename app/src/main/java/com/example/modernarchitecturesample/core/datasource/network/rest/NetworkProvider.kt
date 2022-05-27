@@ -1,6 +1,6 @@
-package com.example.modernarchitecturesample.core.datasource.network
+package com.example.modernarchitecturesample.core.datasource.network.rest
 
-import com.example.modernarchitecturesample.core.datasource.network.ApiInterface.Companion.baseUrl
+import com.example.modernarchitecturesample.core.datasource.network.rest.ApiInterface.Companion.baseUrl
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Dispatcher

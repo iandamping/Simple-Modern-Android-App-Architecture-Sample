@@ -1,6 +1,7 @@
 package com.example.modernarchitecturesample.feature.main
 
-import com.example.modernarchitecturesample.core.repository.model.Movie
+import com.example.modernarchitecturesample.core.datasource.model.Movie
+
 
 data class MainMovieState(
     val isLoading: Boolean,

@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.modernarchitecturesample.R
-import com.example.modernarchitecturesample.core.repository.model.Movie
+import com.example.modernarchitecturesample.core.datasource.model.Movie
 import com.example.modernarchitecturesample.databinding.ItemMovieBinding
 
 class MovieAdapter(

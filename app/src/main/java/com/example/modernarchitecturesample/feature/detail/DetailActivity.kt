@@ -10,6 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import coil.load
+import com.example.modernarchitecturesample.MainApplication
 import com.example.modernarchitecturesample.R
 import com.example.modernarchitecturesample.core.DataProvider
 import com.example.modernarchitecturesample.util.launchAndCollectIn
@@ -29,7 +30,7 @@ class DetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
-        viewModelFactory = DetailViewModelFactory(DataProvider.provideRepository())
+        viewModelFactory = DetailViewModelFactory((application as MainApplication).dataProvider.provideRepository())
         viewModel = ViewModelProvider(
             owner = this,
             factory = viewModelFactory

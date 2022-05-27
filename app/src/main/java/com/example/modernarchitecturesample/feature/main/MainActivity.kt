@@ -10,10 +10,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.modernarchitecturesample.feature.detail.DetailActivity
+import com.example.modernarchitecturesample.MainApplication
 import com.example.modernarchitecturesample.R
-import com.example.modernarchitecturesample.core.DataProvider
-import com.example.modernarchitecturesample.core.repository.model.Movie
+import com.example.modernarchitecturesample.core.datasource.model.Movie
+import com.example.modernarchitecturesample.feature.detail.DetailActivity
 import com.example.modernarchitecturesample.util.launchAndCollectIn
 import com.google.android.material.snackbar.Snackbar
 
@@ -30,7 +30,8 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        viewModelFactory = MainViewModelFactory(DataProvider.provideRepository())
+        viewModelFactory =
+            MainViewModelFactory((application as MainApplication).dataProvider.provideRepository())
         viewModel = ViewModelProvider(
             owner = this,
             factory = viewModelFactory
@@ -67,9 +68,9 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
 
             }
 
-            if (it.isLoading){
+            if (it.isLoading) {
                 progressBar.visibility = View.VISIBLE
-            }else{
+            } else {
                 progressBar.visibility = View.GONE
             }
         }
