@@ -1,5 +1,6 @@
 package com.example.modernarchitecturesample.core.repository
 
+import com.example.modernarchitecturesample.core.datasource.local.FavoriteLocalDataSource
 import com.example.modernarchitecturesample.core.datasource.local.LocalDataSource
 import com.example.modernarchitecturesample.core.datasource.model.*
 import com.example.modernarchitecturesample.core.datasource.network.RemoteDataSource
@@ -11,6 +12,7 @@ import java.util.concurrent.TimeUnit
 class MovieRepositoryImpl(
     private val remoteSource: RemoteDataSource,
     private val localSource: LocalDataSource,
+    private val favoriteLocalSource: FavoriteLocalDataSource,
     private val networkUtils: NetworkUtils
 ) : MovieRepository {
 
@@ -37,6 +39,17 @@ class MovieRepositoryImpl(
 
     override suspend fun getDetailMovie(movieId: Int): MovieDetail {
         return remoteSource.getDetailMovie(movieId).mapDetailMovieToRepository()
+    }
+
+    override val getFavoriteCacheMovie: Flow<List<MovieDetail>>
+        get() = favoriteLocalSource.loadFavoriteMovie().map { it.mapListToUi() }
+
+    override suspend fun setFavorite(data: MovieDetail) {
+        favoriteLocalSource.insertFavoriteMovie(data.mapToDatabase())
+    }
+
+    override suspend fun deleteFavorite(id: Int) {
+        favoriteLocalSource.deleteFavoriteMovieById(id)
     }
 
     companion object {

@@ -1,6 +1,8 @@
 package com.example.modernarchitecturesample.core
 
 import android.content.Context
+import com.example.modernarchitecturesample.core.datasource.local.FavoriteLocalDataSource
+import com.example.modernarchitecturesample.core.datasource.local.FavoriteLocalDataSourceImpl
 import com.example.modernarchitecturesample.core.datasource.local.LocalDataSource
 import com.example.modernarchitecturesample.core.datasource.local.LocalDataSourceImpl
 import com.example.modernarchitecturesample.core.datasource.local.db.DatabaseProvider
@@ -21,10 +23,17 @@ class DataProvider(private val context: Context) {
         return LocalDataSourceImpl(DatabaseProvider(context).provideMovieDatabase().movieDao())
     }
 
+    private fun provideFavoriteCacheDataSource(): FavoriteLocalDataSource {
+        return FavoriteLocalDataSourceImpl(
+            DatabaseProvider(context).provideMovieDatabase().favMovieDao()
+        )
+    }
+
     fun provideRepository(): MovieRepository {
         return MovieRepositoryImpl(
             remoteSource = provideRemoteDatasource(),
             localSource = provideCacheDataSource(),
+            favoriteLocalSource = provideFavoriteCacheDataSource(),
             networkUtils = NetworkUtilProvider(context).provideNetworkUtil()
         )
     }
