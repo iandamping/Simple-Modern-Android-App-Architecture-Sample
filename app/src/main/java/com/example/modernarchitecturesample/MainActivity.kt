@@ -16,9 +16,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.modernarchitecturesample.core.datasource.model.Movie
-import com.example.modernarchitecturesample.core.repository.model.Results
 import com.example.modernarchitecturesample.databinding.ItemMovieBinding
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
@@ -49,26 +49,21 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
     private fun getMovie() {
         progressBar.visibility = View.VISIBLE
         lifecycleScope.launch {
-            (application as MainApplication).dataProvider.provideRepository().getCacheMovie.collect { result ->
-                when (result) {
-                    is Results.Error -> {
-                        if (progressBar.isVisible) {
-                            progressBar.visibility = View.GONE
-                        }
-                        Snackbar.make(
-                            this@MainActivity,
-                            mainConstraintLayout,
-                            result.message,
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                    }
-                    is Results.Success -> {
-                        if (progressBar.isVisible) {
-                            progressBar.visibility = View.GONE
-                        }
-                        movieAdapter.submitList(result.data)
-                    }
+            (application as MainApplication).dataProvider.provideRepository().getCacheMovie.catch {
+                if (progressBar.isVisible) {
+                    progressBar.visibility = View.GONE
                 }
+                Snackbar.make(
+                    this@MainActivity,
+                    mainConstraintLayout,
+                    it.localizedMessage,
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }.collect { result ->
+                if (progressBar.isVisible) {
+                    progressBar.visibility = View.GONE
+                }
+                movieAdapter.submitList(result)
             }
         }
 

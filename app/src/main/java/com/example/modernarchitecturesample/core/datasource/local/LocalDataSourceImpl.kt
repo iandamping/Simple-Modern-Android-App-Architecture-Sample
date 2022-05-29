@@ -14,6 +14,10 @@ class LocalDataSourceImpl(private val dao: MovieDao) : LocalDataSource {
         dao.insertMovie(*data)
     }
 
+    override suspend fun insertAndDeleteMovie(vararg data: MovieEntity) {
+        dao.insertAndDeleteMovie(*data)
+    }
+
     override suspend fun deleteMovieById(selectedId: Int) {
         dao.deleteMovieById(selectedId)
     }

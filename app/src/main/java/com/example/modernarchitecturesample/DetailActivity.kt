@@ -10,10 +10,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import coil.load
-import com.example.modernarchitecturesample.core.repository.model.Results
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class DetailActivity : AppCompatActivity() {
     private lateinit var detailConstraintLayout: ConstraintLayout
@@ -41,31 +39,28 @@ class DetailActivity : AppCompatActivity() {
     private fun getDetailMovie(movieId: Int) {
         progressBar.visibility = View.VISIBLE
         lifecycleScope.launch {
-            when (val response = (application as MainApplication).dataProvider.provideRepository()
-                .getDetailMovie(movieId)) {
-                is Results.Error -> {
-                    if (progressBar.isVisible) {
-                        progressBar.visibility = View.GONE
-                    }
-                    Snackbar.make(
-                        this@DetailActivity,
-                        detailConstraintLayout,
-                        response.message,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+            try {
+                val response = (application as MainApplication).dataProvider.provideRepository()
+                    .getDetailMovie(movieId)
+                if (progressBar.isVisible) {
+                    progressBar.visibility = View.GONE
                 }
-                is Results.Success -> {
-                    if (progressBar.isVisible) {
-                        progressBar.visibility = View.GONE
-                    }
-                    val data = response.data
-                    tvDescription.text = data.overview
-                    tvTittle.text = data.title
-                    detailImageView.load(data.backdropPath) {
-                        placeholder(R.drawable.ic_placeholder)
-                        error(R.drawable.ic_error)
-                    }
+                tvDescription.text = response.overview
+                tvTittle.text = response.title
+                detailImageView.load(response.backdropPath) {
+                    placeholder(R.drawable.ic_placeholder)
+                    error(R.drawable.ic_error)
                 }
+            } catch (e: Exception) {
+                if (progressBar.isVisible) {
+                    progressBar.visibility = View.GONE
+                }
+                Snackbar.make(
+                    this@DetailActivity,
+                    detailConstraintLayout,
+                    e.localizedMessage,
+                    Snackbar.LENGTH_SHORT
+                ).show()
             }
         }
     }
