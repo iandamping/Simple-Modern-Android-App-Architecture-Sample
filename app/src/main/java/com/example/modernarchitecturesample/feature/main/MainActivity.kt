@@ -12,7 +12,7 @@ import com.example.modernarchitecturesample.feature.detail.DetailActivity
 import com.example.modernarchitecturesample.util.launchAndCollectIn
 import com.google.android.material.snackbar.Snackbar
 
-class MainActivity : AppCompatActivity(), MainAdapter.MovieAdapterListener {
+class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModelFactory: MainViewModelFactory
     private lateinit var viewModel: MainViewModel
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity(), MainAdapter.MovieAdapterListener {
         with(binding) {
             lifecycleOwner = this@MainActivity
             mainMovieViewModel = viewModel
-            rvMovie.adapter = MainAdapter(this@MainActivity)
+            rvMovie.adapter = MovieAdapter(this@MainActivity)
         }
 
         observeErrorState(binding)

@@ -9,6 +9,8 @@ interface LocalDataSource {
 
     suspend fun insertMovie(vararg data: MovieEntity)
 
+    suspend fun insertAndDeleteMovie(vararg data: MovieEntity)
+
     suspend fun deleteMovieById(selectedId: Int)
 
     suspend fun deleteAllMovie()

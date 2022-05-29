@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.modernarchitecturesample.core.datasource.model.Movie
 import com.example.modernarchitecturesample.databinding.ItemMovieBinding
 
-class MainAdapter(
+class MovieAdapter(
     private val listener: MovieAdapterListener
 ) :
-    ListAdapter<Movie, MainAdapter.MovieViewHolder>(listMoviedapterCallback) {
+    ListAdapter<Movie, MovieAdapter.MovieViewHolder>(listMoviedapterCallback) {
 
     interface MovieAdapterListener {
         fun onClicked(data: Movie)
