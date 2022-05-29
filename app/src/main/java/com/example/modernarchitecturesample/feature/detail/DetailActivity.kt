@@ -17,23 +17,22 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
-    private val detailMovieVm: DetailViewModel by viewModels()
+    private val viewModel: DetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        detailMovieVm.setMovieId(intent.getIntExtra("movie_id", 0))
+        viewModel.setMovieId(intent.getIntExtra("movie_id", 0))
         observeState(binding)
     }
 
     private fun observeState(binding: ActivityDetailBinding) {
-        detailMovieVm.uiState.launchAndCollectIn(this, Lifecycle.State.STARTED) {
+        viewModel.uiState.launchAndCollectIn(this, Lifecycle.State.STARTED) {
             when {
                 it.data != null -> {
-                    val imgUri = it.data.posterPath.toUri().buildUpon().scheme("https").build()
                     with(binding){
-                        ivDetail.load(imgUri) {
+                        ivDetail.load(it.data.backdropPath) {
                             placeholder(R.drawable.ic_placeholder)
                             error(R.drawable.ic_error)
                         }

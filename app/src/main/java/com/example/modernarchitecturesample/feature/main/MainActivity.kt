@@ -15,7 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
     private lateinit var binding: ActivityMainBinding
-    private val mainMovieVm: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,14 +23,14 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
         setContentView(binding.root)
         with(binding) {
             lifecycleOwner = this@MainActivity
-            mainMovieViewModel = mainMovieVm
+            mainMovieViewModel = viewModel
             rvMovie.adapter = MovieAdapter(this@MainActivity)
         }
         observeState()
     }
 
     private fun observeState() {
-        mainMovieVm.uiState.launchAndCollectIn(this, Lifecycle.State.STARTED) {
+        viewModel.uiState.launchAndCollectIn(this, Lifecycle.State.STARTED) {
             if (it.errorMessage.isNotEmpty()) {
                 if (::binding.isInitialized) {
                     Snackbar.make(
