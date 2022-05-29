@@ -3,25 +3,24 @@ package com.example.modernarchitecturesample
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.DiffUtil
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import com.example.modernarchitecturesample.databinding.ItemMovieBinding
+import com.example.modernarchitecturesample.local.MovieEntity
 import com.example.modernarchitecturesample.model.MovieResponse
+import com.example.modernarchitecturesample.model.mapListToDatabase
 import com.example.modernarchitecturesample.network.ApiInterface
 import com.example.modernarchitecturesample.network.MainResponse
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -32,17 +31,20 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
+
+
 class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
     private lateinit var movieRecyclerView: RecyclerView
     private lateinit var mainConstraintLayout: ConstraintLayout
-    private lateinit var progressBar:ProgressBar
+    private lateinit var progressBar: ProgressBar
     private val movieAdapter: MovieAdapter = MovieAdapter(this)
+    private fun Long.isExpired(): Boolean = (System.currentTimeMillis() - this) > CACHE_EXPIRY
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initView()
-        getMovie()
+        observeCacheMovie()
     }
 
     private fun initView() {
@@ -56,7 +58,7 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
         }
     }
 
-    fun hasNetworkConnection(): Boolean {
+    private fun hasNetworkConnection(): Boolean {
         val connectivityManager =
             this.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetworkInfo = connectivityManager.activeNetworkInfo
@@ -102,32 +104,42 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
                     response: Response<MainResponse<MovieResponse>>
                 ) {
                     if (response.isSuccessful) {
-                        if (progressBar.isVisible){
+                        if (progressBar.isVisible) {
                             progressBar.visibility = View.GONE
                         }
                         val data = response.body()?.results
                         if (!data.isNullOrEmpty()) {
-                            movieAdapter.submitList(data)
+                            lifecycleScope.launch {
+                                (application as MainApplication).database.movieDao()
+                                    .insertAndDeleteMovie(*data.mapListToDatabase().toTypedArray())
+                            }
                         } else {
                             Snackbar.make(
                                 this@MainActivity,
                                 mainConstraintLayout,
-                                "Error empty data",
+                                "No result available",
                                 Snackbar.LENGTH_SHORT
                             ).show()
                         }
+                    } else {
+                        Snackbar.make(
+                            this@MainActivity,
+                            mainConstraintLayout,
+                            "Application encounter problem with the server",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
                 override fun onFailure(call: Call<MainResponse<MovieResponse>>, t: Throwable) {
-                    if (progressBar.isVisible){
+                    if (progressBar.isVisible) {
                         progressBar.visibility = View.GONE
                     }
 
                     Snackbar.make(
                         this@MainActivity,
                         mainConstraintLayout,
-                        t.localizedMessage ?: "Error",
+                        t.localizedMessage,
                         Snackbar.LENGTH_SHORT
                     ).show()
                 }
@@ -135,74 +147,35 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
             })
     }
 
-    override fun onClicked(data: MovieResponse) {
+    private fun observeCacheMovie(){
+        lifecycleScope.launch {
+            (application as MainApplication).database.movieDao().loadMovie().collect{
+                if (it.isEmpty()) {
+                    getMovie()
+                } else {
+                    if (hasNetworkConnection()){
+                        if (it.first().timestamp.isExpired()){
+                            getMovie()
+                        } else movieAdapter.submitList(it)
+                    }else movieAdapter.submitList(it)
+                }
+            }
+        }
+    }
+
+    override fun onClicked(data: MovieEntity) {
         val intent = Intent(this, DetailActivity::class.java)
-        intent.putExtra("movie_id", data.id)
+        intent.putExtra("movie_id", data.movieId)
         startActivity(intent)
     }
 
-}
-
-class MovieAdapter(
-    private val listener: MovieAdapterListener
-) :
-    ListAdapter<MovieResponse, MovieAdapter.MovieViewHolder>(listMoviedapterCallback) {
-
-    interface MovieAdapterListener {
-        fun onClicked(data: MovieResponse)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
-        return MovieViewHolder(
-            ItemMovieBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-        )
-    }
-
-    override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        val data = getItem(position)
-        holder.bind(data)
-        holder.itemView.setOnClickListener {
-            listener.onClicked(data)
-        }
-    }
-
-    inner class MovieViewHolder(
-        private val binding: ItemMovieBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
-
-        private val imageFormatter = "https://image.tmdb.org/t/p/w500"
-
-        fun bind(data: MovieResponse) {
-            with(binding) {
-                ivMovieImage.load(imageFormatter + data.backdrop_path) {
-                    placeholder(R.drawable.ic_placeholder)
-                    error(R.drawable.ic_error)
-                }
-                tvMovieName.text = data.title
-                tvMovieReleaseDate.text = data.overview
-            }
-        }
-    }
-
     companion object {
-        val listMoviedapterCallback = object : DiffUtil.ItemCallback<MovieResponse>() {
-            override fun areItemsTheSame(oldItem: MovieResponse, newItem: MovieResponse): Boolean {
-                return oldItem.id == newItem.id
-            }
-
-            override fun areContentsTheSame(
-                oldItem: MovieResponse,
-                newItem: MovieResponse
-            ): Boolean {
-                return oldItem.poster_path == newItem.poster_path
-            }
-        }
+        private val CACHE_EXPIRY = TimeUnit.HOURS.toMillis(1)
     }
+
 }
+
+
 
 
 

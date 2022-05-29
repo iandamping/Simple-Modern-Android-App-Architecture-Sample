@@ -1,9 +1,6 @@
 package com.example.modernarchitecturesample.local
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -13,6 +10,12 @@ interface MovieDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMovie(vararg data: MovieEntity)
+
+    @Transaction
+    suspend fun insertAndDeleteMovie(vararg data: MovieEntity){
+        deleteAllMovie()
+        insertMovie(*data)
+    }
 
     @Query("DELETE FROM movie_table where movie_primary_id = :selectedId")
     suspend fun deleteMovieById(selectedId: Int)
