@@ -1,6 +1,7 @@
 package com.example.modernarchitecturesample
 
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -53,6 +54,13 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
                 LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
             adapter = movieAdapter
         }
+    }
+
+    fun hasNetworkConnection(): Boolean {
+        val connectivityManager =
+            this.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting
     }
 
     private fun provideApiInterface(): ApiInterface {
