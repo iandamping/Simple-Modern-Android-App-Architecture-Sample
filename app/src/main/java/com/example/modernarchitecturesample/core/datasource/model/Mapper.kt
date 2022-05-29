@@ -1,9 +1,9 @@
-package com.example.modernarchitecturesample.core.repository.model
+package com.example.modernarchitecturesample.core.datasource.model
 
-import com.example.modernarchitecturesample.core.datasource.cache.MovieEntity
-import com.example.modernarchitecturesample.core.datasource.remote.network.ApiInterface.Companion.imageFormatter
-import com.example.modernarchitecturesample.core.datasource.remote.network.response.MovieDetailResponse
-import com.example.modernarchitecturesample.core.datasource.remote.network.response.MovieResponse
+import com.example.modernarchitecturesample.core.datasource.local.model.MovieEntity
+import com.example.modernarchitecturesample.core.datasource.network.model.MovieDetailResponse
+import com.example.modernarchitecturesample.core.datasource.network.model.MovieResponse
+import com.example.modernarchitecturesample.core.datasource.network.rest.ApiInterface.Companion.imageFormatter
 
 fun MovieResponse.mapMovieToRepository(): Movie = Movie(
     id = id, title = title, poster_path = imageFormatter + poster_path, overview = overview
@@ -28,6 +28,12 @@ fun MovieResponse.mapToDatabase(): MovieEntity = MovieEntity(
     originalTitle = originalTitle,
     backdrop_path = backdrop_path,
     overview = overview,
+    voteCount = vote_count,
+    video = video,
+    popularity = popularity,
+    originalLanguage = original_language,
+    adult = adult,
+    releaseDate = release_date,
     timestamp = System.currentTimeMillis()
 )
 

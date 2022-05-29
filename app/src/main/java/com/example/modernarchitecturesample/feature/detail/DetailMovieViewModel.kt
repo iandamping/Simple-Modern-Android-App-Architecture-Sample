@@ -3,7 +3,6 @@ package com.example.modernarchitecturesample.feature.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.modernarchitecturesample.core.repository.MovieRepository
-import com.example.modernarchitecturesample.core.repository.model.Results
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,12 +31,17 @@ class DetailMovieViewModel @Inject constructor(private val repository: MovieRepo
         viewModelScope.launch {
             movieId.collect { movieId ->
                 if (movieId != null) {
-                    when (val data = repository.getDetailMovie(movieId)) {
-                        is Results.Error -> _uiState.update { currentUiState ->
-                            currentUiState.copy(isLoading = false, errorMessage = data.message)
+                    try {
+                        val data = repository.getDetailMovie(movieId)
+                        _uiState.update { currentUiState ->
+                            currentUiState.copy(isLoading = false, data = data)
                         }
-                        is Results.Success -> _uiState.update { currentUiState ->
-                            currentUiState.copy(isLoading = false, data = data.data)
+                    } catch (e: Exception) {
+                        _uiState.update { currentUiState ->
+                            currentUiState.copy(
+                                isLoading = false,
+                                errorMessage = e.localizedMessage
+                            )
                         }
                     }
                 }

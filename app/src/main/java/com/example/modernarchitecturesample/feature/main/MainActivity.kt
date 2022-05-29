@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
-import com.example.modernarchitecturesample.core.repository.model.Movie
+import com.example.modernarchitecturesample.core.datasource.model.Movie
 import com.example.modernarchitecturesample.databinding.ActivityMainBinding
 import com.example.modernarchitecturesample.feature.detail.DetailActivity
 import com.example.modernarchitecturesample.feature.launchAndCollectIn
@@ -15,7 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), MainAdapter.MovieAdapterListener {
     private lateinit var binding: ActivityMainBinding
-    private val mainMovieVm: MainMovieViewModel by viewModels()
+    private val mainMovieVm: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

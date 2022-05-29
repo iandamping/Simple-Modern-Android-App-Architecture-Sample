@@ -6,7 +6,7 @@
     <data>
         <variable
             name="mainMovieViewModel"
-            type="com.example.modernarchitecturesample.feature.main.MainMovieViewModel" />
+            type="com.example.modernarchitecturesample.feature.main.MainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

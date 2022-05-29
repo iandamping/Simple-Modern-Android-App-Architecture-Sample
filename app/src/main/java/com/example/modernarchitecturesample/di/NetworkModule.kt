@@ -1,6 +1,6 @@
 package com.example.modernarchitecturesample.di
 
-import com.example.modernarchitecturesample.core.datasource.remote.network.ApiInterface
+import com.example.modernarchitecturesample.core.datasource.network.rest.ApiInterface
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module

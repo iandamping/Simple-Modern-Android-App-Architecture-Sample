@@ -1,9 +1,9 @@
 package com.example.modernarchitecturesample.di
 
-import com.example.modernarchitecturesample.core.datasource.cache.CacheDataSource
-import com.example.modernarchitecturesample.core.datasource.cache.CacheDataSourceImpl
-import com.example.modernarchitecturesample.core.datasource.remote.RemoteDataSource
-import com.example.modernarchitecturesample.core.datasource.remote.RemoteDataSourceImpl
+import com.example.modernarchitecturesample.core.datasource.local.LocalDataSource
+import com.example.modernarchitecturesample.core.datasource.local.LocalDataSourceImpl
+import com.example.modernarchitecturesample.core.datasource.network.RemoteDataSource
+import com.example.modernarchitecturesample.core.datasource.network.RemoteDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -21,5 +21,5 @@ interface DataSourceModule {
 
     @Binds
     @Singleton
-    fun provideCacheDataSource(source: CacheDataSourceImpl): CacheDataSource
+    fun provideCacheDataSource(source: LocalDataSourceImpl): LocalDataSource
 }

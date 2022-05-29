@@ -1,13 +1,12 @@
-package com.example.modernarchitecturesample.feature.util
+package com.example.modernarchitecturesample.core.datasource.network.util
 
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
-import com.example.modernarchitecturesample.feature.util.NetworkUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class NetworkUtilsImpl @Inject constructor(@ApplicationContext val context: Context) :
+class NetworkUtilsImpl @Inject constructor(@ApplicationContext private val context: Context) :
     NetworkUtils {
 
     override fun hasNetworkConnection(): Boolean {

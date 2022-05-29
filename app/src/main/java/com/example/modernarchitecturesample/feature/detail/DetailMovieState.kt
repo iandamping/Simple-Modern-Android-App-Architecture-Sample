@@ -1,6 +1,7 @@
 package com.example.modernarchitecturesample.feature.detail
 
-import com.example.modernarchitecturesample.core.repository.model.MovieDetail
+import com.example.modernarchitecturesample.core.datasource.model.MovieDetail
+
 
 data class DetailMovieState(
     val isLoading: Boolean,
