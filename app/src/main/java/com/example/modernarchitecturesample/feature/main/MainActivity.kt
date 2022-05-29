@@ -13,7 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), MainAdapter.MovieAdapterListener {
+class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
     private lateinit var binding: ActivityMainBinding
     private val mainMovieVm: MainViewModel by viewModels()
 
@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity(), MainAdapter.MovieAdapterListener {
         with(binding) {
             lifecycleOwner = this@MainActivity
             mainMovieViewModel = mainMovieVm
-            rvMovie.adapter = MainAdapter(this@MainActivity)
+            rvMovie.adapter = MovieAdapter(this@MainActivity)
         }
         observeState()
     }

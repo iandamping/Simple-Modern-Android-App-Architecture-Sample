@@ -13,12 +13,11 @@ import com.example.modernarchitecturesample.databinding.ActivityDetailBinding
 import com.example.modernarchitecturesample.feature.launchAndCollectIn
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
-    private val detailMovieVm: DetailMovieViewModel by viewModels()
+    private val detailMovieVm: DetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

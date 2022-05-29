@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.modernarchitecturesample.R
-import com.example.modernarchitecturesample.feature.main.MainAdapter
+import com.example.modernarchitecturesample.feature.main.MovieAdapter
 import com.example.modernarchitecturesample.feature.main.MainMovieState
 
 object BindAdapters {
@@ -19,7 +19,7 @@ object BindAdapters {
     fun bindRecyclerView(recyclerView: RecyclerView, data: MainMovieState) {
         recyclerView.layoutManager =
             LinearLayoutManager(recyclerView.context, LinearLayoutManager.VERTICAL, false)
-        val adapter = recyclerView.adapter as MainAdapter
+        val adapter = recyclerView.adapter as MovieAdapter
         if (data.data.isNotEmpty()) {
             adapter.submitList(data.data)
         }

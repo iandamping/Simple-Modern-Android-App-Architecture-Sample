@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailMovieViewModel @Inject constructor(private val repository: MovieRepository) :
+class DetailViewModel @Inject constructor(private val repository: MovieRepository) :
     ViewModel() {
 
     private val _uiState: MutableStateFlow<DetailMovieState> =
