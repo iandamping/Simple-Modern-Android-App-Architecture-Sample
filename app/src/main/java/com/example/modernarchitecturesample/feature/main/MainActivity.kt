@@ -24,28 +24,12 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         with(binding) {
             lifecycleOwner = this@MainActivity
             mainMovieViewModel = viewModel
             rvMovie.adapter = MovieAdapter(this@MainActivity)
         }
 
-        observeErrorState(binding)
-    }
-
-
-    private fun observeErrorState(binding: ActivityMainBinding) {
-        viewModel.uiState.launchAndCollectIn(this, Lifecycle.State.STARTED) {
-            if (it.errorMessage.isNotEmpty()) {
-                Snackbar.make(
-                    this@MainActivity,
-                    binding.root,
-                    it.errorMessage,
-                    Snackbar.LENGTH_SHORT
-                ).show()
-            }
-        }
     }
 
     override fun onClicked(data: Movie) {
