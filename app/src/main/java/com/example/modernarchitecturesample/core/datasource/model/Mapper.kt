@@ -1,5 +1,6 @@
 package com.example.modernarchitecturesample.core.datasource.model
 
+import com.example.modernarchitecturesample.core.datasource.local.model.FavoriteMovieEntity
 import com.example.modernarchitecturesample.core.datasource.local.model.MovieEntity
 import com.example.modernarchitecturesample.core.datasource.network.model.MovieDetailResponse
 import com.example.modernarchitecturesample.core.datasource.network.model.MovieResponse
@@ -10,9 +11,10 @@ fun MovieResponse.mapMovieToRepository(): Movie = Movie(
 )
 
 fun MovieDetailResponse.mapDetailMovieToRepository(): MovieDetail = MovieDetail(
+    localId = null,
+    movieId = id,
     backdropPath = imageFormatter + backdropPath,
     overview = overview,
-    posterPath = imageFormatter + posterPath,
     title = title
 )
 
@@ -47,3 +49,22 @@ fun MovieEntity.mapToDomain(): Movie = Movie(
 )
 
 fun List<MovieEntity>.mapToListMovie() = map { it.mapToDomain() }
+
+
+fun MovieDetail.mapToDatabase(): FavoriteMovieEntity = FavoriteMovieEntity(
+    id = null,
+    favoriteMovieId = movieId,
+    backdropPath = backdropPath,
+    overview = overview,
+    title = title
+)
+
+fun FavoriteMovieEntity.mapToUi(): MovieDetail = MovieDetail(
+    localId = id,
+    movieId = favoriteMovieId,
+    backdropPath = backdropPath,
+    overview = overview,
+    title = title
+)
+
+fun List<FavoriteMovieEntity>.mapListToUi() = map { it.mapToUi() }

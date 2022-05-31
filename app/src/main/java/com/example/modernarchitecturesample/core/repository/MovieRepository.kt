@@ -9,5 +9,11 @@ interface MovieRepository {
 
     val getCacheMovie: Flow<List<Movie>>
 
+    fun getSingleFavoriteCacheMovie(movieId:Int): Flow<MovieDetail>
+
     suspend fun getDetailMovie(movieId: Int): MovieDetail
+
+    suspend fun setFavorite(data: MovieDetail)
+
+    suspend fun deleteFavorite(id: Int)
 }

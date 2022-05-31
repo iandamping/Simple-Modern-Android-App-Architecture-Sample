@@ -2,6 +2,7 @@ package com.example.modernarchitecturesample.feature.detail
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
@@ -15,23 +16,19 @@ import com.google.android.material.snackbar.Snackbar
 
 class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
-    private lateinit var viewModelFactory: DetailViewModelFactory
-    private lateinit var viewModel: DetailViewModel
+
+    private val viewModel: DetailViewModel by viewModels {
+        DetailViewModelFactory(
+            this,
+            (application as MainApplication).dataProvider.provideRepository(),
+            intent.extras
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModelFactory =
-            DetailViewModelFactory((application as MainApplication).dataProvider.provideRepository())
-        viewModel = ViewModelProvider(
-            owner = this,
-            factory = viewModelFactory
-        ).get(DetailViewModel::class.java)
-
-        viewModel.setMovieId(intent.getIntExtra("movie_id", 0))
-
         observeState(binding)
     }
 
@@ -41,10 +38,22 @@ class DetailActivity : AppCompatActivity() {
             when {
                 it.data != null -> {
                     with(binding) {
+                        ivBookmark.setOnClickListener { _ ->
+                            if (it.data.localId != null) {
+                                viewModel.removeFavoriteMovie(it.data.localId)
+                            } else viewModel.setFavoriteMovie(it.data)
+                        }
+
                         ivDetail.load(it.data.backdropPath) {
                             placeholder(R.drawable.ic_placeholder)
                             error(R.drawable.ic_error)
                         }
+                        ivBookmark.load(
+                            if (it.data.localId != null) {
+                                R.drawable.ic_bookmarked
+                            } else R.drawable.ic_unbookmark
+
+                        )
                         tvTittle.text = it.data.title
                         tvDescription.text = it.data.overview
                     }
