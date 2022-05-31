@@ -9,8 +9,7 @@ import kotlinx.coroutines.launch
 class MainViewModel(private val repository: MovieRepository) : ViewModel() {
 
 
-    private val _uiState: MutableStateFlow<MainMovieState> =
-        MutableStateFlow(MainMovieState.initialize())
+    private val _uiState: MutableStateFlow<MainMovieState> = MutableStateFlow(MainMovieState.initialize())
     val uiState: StateFlow<MainMovieState> = _uiState.asStateFlow()
 
 

@@ -17,24 +17,6 @@ class DetailViewModel(
         MutableStateFlow(DetailMovieState.initialize())
     val uiState: StateFlow<DetailMovieState> = _uiState.asStateFlow()
 
-
-//    fun getMovie(movieId: Int) {
-//        viewModelScope.launch {
-//            repository.getSingleFavoriteCacheMovie(movieId).catch {
-//                _uiState.update { currentUiState ->
-//                    currentUiState.copy(
-//                        isLoading = false,
-//                        errorMessage = it.localizedMessage
-//                    )
-//                }
-//            }.collect { data ->
-//                _uiState.update { currentUiState ->
-//                    currentUiState.copy(isLoading = false, data = data)
-//                }
-//            }
-//        }
-//    }
-
     fun setFavoriteMovie(data: MovieDetail) {
         viewModelScope.launch {
             repository.setFavorite(data)
