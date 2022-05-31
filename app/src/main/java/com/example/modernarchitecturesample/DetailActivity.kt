@@ -11,7 +11,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.example.modernarchitecturesample.local.FavoriteMovieEntity
-import com.example.modernarchitecturesample.local.MovieEntity
 import com.example.modernarchitecturesample.model.MovieDetailResponse
 import com.example.modernarchitecturesample.network.ApiInterface
 import com.google.android.material.snackbar.Snackbar
@@ -26,21 +25,18 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class DetailActivity : AppCompatActivity() {
     private val imageFormatter = "https://image.tmdb.org/t/p/w500"
     private lateinit var detailConstraintLayout: ConstraintLayout
     private lateinit var detailImageView: ImageView
-    private var favoriteItem: MovieDetail? = null
+    private lateinit var favoriteImageView: ImageView
     private lateinit var tvTittle: TextView
     private lateinit var tvDescription: TextView
     private lateinit var progressBar: ProgressBar
 
-    private var favoriteItemId: Int? = null
-    private var isFavorite: Boolean = false
-    private var favoriteItem: FavoriteMovieEntity? = null
+    private var responseData: MovieDetailResponse? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,6 +51,7 @@ class DetailActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.detail_progress_circular)
         detailConstraintLayout = findViewById(R.id.clDetail)
         detailImageView = findViewById(R.id.ivDetail)
+        favoriteImageView = findViewById(R.id.ivBookmark)
         tvTittle = findViewById(R.id.tvTittle)
         tvDescription = findViewById(R.id.tvDescription)
     }
@@ -109,33 +106,16 @@ class DetailActivity : AppCompatActivity() {
                     response: Response<MovieDetailResponse>
                 ) {
                     if (response.isSuccessful) {
-                        if (progressBar.isVisible){
+                        if (progressBar.isVisible) {
                             progressBar.visibility = View.GONE
                         }
-                        val data = response.body()
-                        if (data != null) {
-                            tvDescription.text = data.overview
-                            tvTittle.text = data.title
-                            detailImageView.load(imageFormatter + data.backdropPath) {
+                        responseData = response.body()
+                        if (responseData != null) {
+                            tvDescription.text = responseData?.overview
+                            tvTittle.text = responseData?.title
+                            detailImageView.load(imageFormatter + responseData?.backdropPath) {
                                 placeholder(R.drawable.ic_placeholder)
                                 error(R.drawable.ic_error)
-                            }
-
-
-                            lifecycleScope.launch {
-                                (application as MainApplication).database.favMovieDao().loadFavoriteMovie().collect{ favorite ->
-                                    val data = favorite.firstOrNull { cached -> cached.movieId == movieId }
-                                    if (data == null) {
-                                        isFavorite = false
-                                        favoriteItem = response
-                                        favoriteImageView.load(R.drawable.ic_unbookmark)
-                                    } else {
-                                        isFavorite = true
-                                        favoriteItemId = data.localId
-                                        favoriteItem = response
-                                        favoriteImageView.load(R.drawable.ic_bookmarked)
-                                    }
-                                }
                             }
                         }
                     }
@@ -145,7 +125,7 @@ class DetailActivity : AppCompatActivity() {
                     call: Call<MovieDetailResponse>,
                     t: Throwable
                 ) {
-                    if (progressBar.isVisible){
+                    if (progressBar.isVisible) {
                         progressBar.visibility = View.GONE
                     }
                     Snackbar.make(
@@ -157,5 +137,41 @@ class DetailActivity : AppCompatActivity() {
                 }
 
             })
+
+
+        lifecycleScope.launch {
+            (application as MainApplication).database.favMovieDao()
+                .loadFavoriteMovie().collect { favorite ->
+                    val filteringData =
+                        favorite.firstOrNull { cached -> cached.favoriteMovieId == movieId }
+                    favoriteImageView.load(
+                        if (filteringData != null) {
+                            R.drawable.ic_bookmarked
+                        } else R.drawable.ic_unbookmark
+                    )
+
+                    favoriteImageView.setOnClickListener {
+                        if (filteringData == null) {
+                            if (responseData != null) {
+                                setFavoriteItem(
+                                    FavoriteMovieEntity(
+                                        id = null,
+                                        favoriteMovieId = responseData?.id!!,
+                                        backdropPath = imageFormatter + responseData?.backdropPath,
+                                        overview = responseData?.overview!!,
+                                        title = responseData?.title!!
+                                    )
+                                )
+                            }
+                        } else {
+                            if (filteringData.id != null) deleteItem(filteringData.id)
+                        }
+
+                    }
+
+                }
+        }
+
+
     }
 }
