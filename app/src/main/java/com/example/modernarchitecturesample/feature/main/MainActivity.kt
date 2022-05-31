@@ -26,22 +26,6 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
             mainMovieViewModel = viewModel
             rvMovie.adapter = MovieAdapter(this@MainActivity)
         }
-        observeState()
-    }
-
-    private fun observeState() {
-        viewModel.uiState.launchAndCollectIn(this, Lifecycle.State.STARTED) {
-            if (it.errorMessage.isNotEmpty()) {
-                if (::binding.isInitialized) {
-                    Snackbar.make(
-                        this@MainActivity,
-                        binding.root,
-                        it.errorMessage,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        }
     }
 
     override fun onClicked(data: Movie) {

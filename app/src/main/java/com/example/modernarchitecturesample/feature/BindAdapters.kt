@@ -1,8 +1,8 @@
 package com.example.modernarchitecturesample.feature
 
-import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.modernarchitecturesample.R
-import com.example.modernarchitecturesample.feature.main.MovieAdapter
 import com.example.modernarchitecturesample.feature.main.MainMovieState
+import com.example.modernarchitecturesample.feature.main.MovieAdapter
+import com.google.android.material.snackbar.Snackbar
 
 object BindAdapters {
     @JvmStatic
@@ -34,11 +35,21 @@ object BindAdapters {
     @JvmStatic
     @BindingAdapter("detailProgressState")
     fun bindDetailProgressBar(view: ProgressBar, data: Boolean) {
-        if (!data) {
-            if (view.isVisible) {
-                view.visibility = View.GONE
-            }
-        } else view.visibility = View.VISIBLE
+        view.isVisible = data
+    }
+
+    @JvmStatic
+    @BindingAdapter("snackBarMessage")
+    fun bindSnackBar(view: ConstraintLayout, data: MainMovieState) {
+        if (data.errorMessage.isNotEmpty()){
+            Snackbar.make(
+                view.context,
+                view,
+                data.errorMessage,
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
+
     }
 
     @JvmStatic
