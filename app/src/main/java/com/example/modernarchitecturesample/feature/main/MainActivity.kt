@@ -4,10 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.modernarchitecturesample.MainApplication
@@ -18,25 +18,19 @@ import com.example.modernarchitecturesample.util.launchAndCollectIn
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
-
-    private lateinit var viewModelFactory: MainViewModelFactory
-    private lateinit var viewModel: MainViewModel
-
     private lateinit var movieRecyclerView: RecyclerView
     private lateinit var mainConstraintLayout: ConstraintLayout
     private lateinit var progressBar: ProgressBar
     private val movieAdapter: MovieAdapter = MovieAdapter(this)
 
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModelFactory((application as MainApplication).dataProvider.provideRepository())
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        viewModelFactory =
-            MainViewModelFactory((application as MainApplication).dataProvider.provideRepository())
-        viewModel = ViewModelProvider(
-            owner = this,
-            factory = viewModelFactory
-        ).get(MainViewModel::class.java)
-
         initView()
         getMovie()
     }
