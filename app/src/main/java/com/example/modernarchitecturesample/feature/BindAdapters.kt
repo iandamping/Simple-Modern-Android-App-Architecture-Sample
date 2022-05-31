@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.modernarchitecturesample.R
 import com.example.modernarchitecturesample.feature.detail.DetailMovieState
+import com.example.modernarchitecturesample.feature.detail.DetailViewModel
 import com.example.modernarchitecturesample.feature.main.MainMovieState
 import com.example.modernarchitecturesample.feature.main.MovieAdapter
 import com.google.android.material.snackbar.Snackbar
@@ -74,6 +75,18 @@ object BindAdapters {
                 R.drawable.ic_bookmarked
             } else R.drawable.ic_unbookmark
         )
+    }
+
+
+    @JvmStatic
+    @BindingAdapter(value = ["app:detailState", "app:detailViewModel"], requireAll = true)
+    fun bindBookmarkImageListener(view: ImageView, data: DetailMovieState,viewModel:DetailViewModel ) {
+        view.setOnClickListener {
+            if (data.data?.localId != null) {
+                viewModel.removeFavoriteMovie(data.data.localId)
+            } else if (data.data !=null) viewModel.setFavoriteMovie(data.data)
+        }
+
     }
 
     @JvmStatic

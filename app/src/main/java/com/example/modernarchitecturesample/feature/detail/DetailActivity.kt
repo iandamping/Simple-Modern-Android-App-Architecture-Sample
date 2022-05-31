@@ -29,21 +29,6 @@ class DetailActivity : AppCompatActivity() {
             lifecycleOwner = this@DetailActivity
             detailViewModel = viewModel
         }
-        observeState(binding)
     }
 
-    private fun observeState(binding: ActivityDetailBinding) {
-        viewModel.uiState.launchAndCollectIn(this, Lifecycle.State.STARTED) {
-            when {
-                it.data != null -> {
-                    binding.ivBookmark.setOnClickListener { _ ->
-                        if (it.data.localId != null) {
-                            viewModel.removeFavoriteMovie(it.data.localId)
-                        } else viewModel.setFavoriteMovie(it.data)
-                    }
-
-                }
-            }
-        }
-    }
 }
