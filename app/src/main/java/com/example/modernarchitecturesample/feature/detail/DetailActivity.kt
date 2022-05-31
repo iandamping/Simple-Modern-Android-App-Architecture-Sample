@@ -1,26 +1,28 @@
 package com.example.modernarchitecturesample.feature.detail
 
 import android.os.Bundle
-import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.example.modernarchitecturesample.MainApplication
 import com.example.modernarchitecturesample.R
-import com.example.modernarchitecturesample.core.DataProvider
 import com.example.modernarchitecturesample.util.launchAndCollectIn
 import com.google.android.material.snackbar.Snackbar
 
 class DetailActivity : AppCompatActivity() {
 
     private val viewModel: DetailViewModel by viewModels {
-        DetailViewModelFactory(this,(application as MainApplication).dataProvider.provideRepository(),intent.extras)
+        DetailViewModelFactory(
+            this,
+            (application as MainApplication).dataProvider.provideRepository(),
+            intent.extras
+        )
     }
 
     private lateinit var detailConstraintLayout: ConstraintLayout
@@ -51,7 +53,6 @@ class DetailActivity : AppCompatActivity() {
         viewModel.uiState.launchAndCollectIn(this, Lifecycle.State.STARTED) {
             when {
                 it.data != null -> {
-
                     favoriteImageView.setOnClickListener { _ ->
                         if (it.data.localId != null) {
                             viewModel.removeFavoriteMovie(it.data.localId)
@@ -81,12 +82,7 @@ class DetailActivity : AppCompatActivity() {
                     ).show()
                 }
             }
-
-            if (it.isLoading){
-                progressBar.visibility = View.VISIBLE
-            }else{
-                progressBar.visibility = View.GONE
-            }
+            progressBar.isVisible = it.isLoading
         }
     }
 }

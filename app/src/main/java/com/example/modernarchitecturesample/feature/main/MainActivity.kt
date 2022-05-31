@@ -2,11 +2,11 @@ package com.example.modernarchitecturesample.feature.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.ProgressBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -61,12 +61,7 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
                 ).show()
 
             }
-
-            if (it.isLoading) {
-                progressBar.visibility = View.VISIBLE
-            } else {
-                progressBar.visibility = View.GONE
-            }
+            progressBar.isVisible = it.isLoading
         }
     }
 
