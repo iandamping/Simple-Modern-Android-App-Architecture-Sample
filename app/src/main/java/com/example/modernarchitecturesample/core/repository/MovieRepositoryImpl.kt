@@ -1,5 +1,6 @@
 package com.example.modernarchitecturesample.core.repository
 
+import com.example.modernarchitecturesample.core.datasource.local.FavoriteLocalDataSource
 import com.example.modernarchitecturesample.core.datasource.local.LocalDataSource
 import com.example.modernarchitecturesample.core.datasource.model.*
 import com.example.modernarchitecturesample.core.datasource.network.RemoteDataSource
@@ -12,6 +13,7 @@ import javax.inject.Inject
 class MovieRepositoryImpl @Inject constructor(
     private val remoteSource: RemoteDataSource,
     private val localSource: LocalDataSource,
+    private val favoriteLocalSource: FavoriteLocalDataSource,
     private val networkUtils: NetworkUtils
 ) : MovieRepository {
 
@@ -38,6 +40,27 @@ class MovieRepositoryImpl @Inject constructor(
 
     override suspend fun getDetailMovie(movieId: Int): MovieDetail {
         return remoteSource.getDetailMovie(movieId).mapDetailMovieToRepository()
+    }
+
+    override fun getSingleFavoriteCacheMovie(movieId:Int): Flow<MovieDetail> {
+        return favoriteLocalSource.loadFavoriteMovie().map {
+            if (it.isEmpty()){
+                getDetailMovie(movieId)
+            } else {
+                val data = it.firstOrNull { cached -> cached.favoriteMovieId == movieId }
+                if (data!=null){
+                    data.mapToUi()
+                } else getDetailMovie(movieId)
+            }
+        }
+    }
+
+    override suspend fun setFavorite(data: MovieDetail) {
+        favoriteLocalSource.insertFavoriteMovie(data.mapToDatabase())
+    }
+
+    override suspend fun deleteFavorite(id: Int) {
+        favoriteLocalSource.deleteFavoriteMovieById(id)
     }
 
     companion object {

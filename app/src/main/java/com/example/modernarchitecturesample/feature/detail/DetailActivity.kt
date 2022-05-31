@@ -23,7 +23,6 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel.setMovieId(intent.getIntExtra("movie_id", 0))
         observeState(binding)
     }
 
@@ -32,6 +31,18 @@ class DetailActivity : AppCompatActivity() {
             when {
                 it.data != null -> {
                     with(binding){
+                        ivBookmark.setOnClickListener { _ ->
+                            if (it.data.localId != null) {
+                                viewModel.removeFavoriteMovie(it.data.localId)
+                            } else viewModel.setFavoriteMovie(it.data)
+                        }
+
+                        ivBookmark.load(
+                            if (it.data.localId != null) {
+                                R.drawable.ic_bookmarked
+                            } else R.drawable.ic_unbookmark
+
+                        )
                         ivDetail.load(it.data.backdropPath) {
                             placeholder(R.drawable.ic_placeholder)
                             error(R.drawable.ic_error)

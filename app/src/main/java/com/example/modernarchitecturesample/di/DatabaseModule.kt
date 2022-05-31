@@ -2,6 +2,7 @@ package com.example.modernarchitecturesample.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.modernarchitecturesample.core.datasource.local.db.FavoriteMovieDao
 import com.example.modernarchitecturesample.core.datasource.local.db.MovieDao
 import com.example.modernarchitecturesample.core.datasource.local.db.MovieDatabase
 import dagger.Module
@@ -23,8 +24,13 @@ object DatabaseModule {
 
 
     @Provides
-    fun provideFavDao(db: MovieDatabase): MovieDao {
+    fun provideMovieDao(db: MovieDatabase): MovieDao {
         return db.movieDao()
+    }
+
+    @Provides
+    fun provideFavDao(db: MovieDatabase): FavoriteMovieDao {
+        return db.favMovieDao()
     }
 
 

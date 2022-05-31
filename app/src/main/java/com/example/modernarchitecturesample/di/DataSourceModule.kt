@@ -1,5 +1,7 @@
 package com.example.modernarchitecturesample.di
 
+import com.example.modernarchitecturesample.core.datasource.local.FavoriteLocalDataSource
+import com.example.modernarchitecturesample.core.datasource.local.FavoriteLocalDataSourceImpl
 import com.example.modernarchitecturesample.core.datasource.local.LocalDataSource
 import com.example.modernarchitecturesample.core.datasource.local.LocalDataSourceImpl
 import com.example.modernarchitecturesample.core.datasource.network.RemoteDataSource
@@ -18,6 +20,10 @@ interface DataSourceModule {
     @Singleton
     fun provideRemoteDataSource(source: RemoteDataSourceImpl): RemoteDataSource
 
+
+    @Binds
+    @Singleton
+    fun provideFavoriteCacheDataSource(source: FavoriteLocalDataSourceImpl): FavoriteLocalDataSource
 
     @Binds
     @Singleton
