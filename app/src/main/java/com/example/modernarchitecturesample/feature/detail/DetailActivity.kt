@@ -11,6 +11,7 @@ import coil.load
 import com.example.modernarchitecturesample.R
 import com.example.modernarchitecturesample.databinding.ActivityDetailBinding
 import com.example.modernarchitecturesample.feature.launchAndCollectIn
+import com.example.modernarchitecturesample.feature.main.MovieAdapter
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,6 +24,11 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        with(binding) {
+            lifecycleOwner = this@DetailActivity
+            detailViewModel = viewModel
+        }
         observeState(binding)
     }
 
@@ -30,38 +36,14 @@ class DetailActivity : AppCompatActivity() {
         viewModel.uiState.launchAndCollectIn(this, Lifecycle.State.STARTED) {
             when {
                 it.data != null -> {
-                    with(binding){
-                        ivBookmark.setOnClickListener { _ ->
-                            if (it.data.localId != null) {
-                                viewModel.removeFavoriteMovie(it.data.localId)
-                            } else viewModel.setFavoriteMovie(it.data)
-                        }
-
-                        ivBookmark.load(
-                            if (it.data.localId != null) {
-                                R.drawable.ic_bookmarked
-                            } else R.drawable.ic_unbookmark
-
-                        )
-                        ivDetail.load(it.data.backdropPath) {
-                            placeholder(R.drawable.ic_placeholder)
-                            error(R.drawable.ic_error)
-                        }
-                        tvTittle.text = it.data.title
-                        tvDescription.text = it.data.overview
+                    binding.ivBookmark.setOnClickListener { _ ->
+                        if (it.data.localId != null) {
+                            viewModel.removeFavoriteMovie(it.data.localId)
+                        } else viewModel.setFavoriteMovie(it.data)
                     }
 
                 }
-                it.errorMessage.isNotEmpty() -> {
-                    Snackbar.make(
-                        this@DetailActivity,
-                        binding.root,
-                        it.errorMessage,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                }
             }
-            binding.detailProgressCircular.isVisible = it.isLoading
         }
     }
 }
