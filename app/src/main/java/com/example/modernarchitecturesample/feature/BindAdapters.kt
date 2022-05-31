@@ -28,11 +28,7 @@ object BindAdapters {
     @JvmStatic
     @BindingAdapter("mainProgressState")
     fun bindMainProgressBar(view: ProgressBar, data: MainMovieState) {
-        if (!data.isLoading) {
-            if (view.isVisible) {
-                view.visibility = View.GONE
-            }
-        } else view.visibility = View.VISIBLE
+        view.isVisible = data.isLoading
     }
 
     @JvmStatic

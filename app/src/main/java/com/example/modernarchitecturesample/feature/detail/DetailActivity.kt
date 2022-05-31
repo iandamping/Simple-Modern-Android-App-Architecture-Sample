@@ -61,11 +61,7 @@ class DetailActivity : AppCompatActivity() {
                     ).show()
                 }
             }
-            if (!it.isLoading) {
-                if (binding.detailProgressCircular.isVisible) {
-                    binding.detailProgressCircular.visibility = View.GONE
-                }
-            } else binding.detailProgressCircular.visibility = View.VISIBLE
+            binding.detailProgressCircular.isVisible = it.isLoading
         }
     }
 }
