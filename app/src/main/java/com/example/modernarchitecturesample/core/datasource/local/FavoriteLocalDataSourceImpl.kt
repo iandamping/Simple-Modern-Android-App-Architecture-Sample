@@ -11,15 +11,19 @@ class FavoriteLocalDataSourceImpl @Inject constructor(private val dao: FavoriteM
         return dao.loadFavoriteMovie()
     }
 
+    override fun loadSingleFavoriteMovie(selectedId: Int): Flow<FavoriteMovieEntity?> {
+        return dao.loadSingleFavoriteMovie(selectedId)
+    }
+
     override suspend fun insertFavoriteMovie(data: FavoriteMovieEntity) {
         dao.insertFavoriteMovie(data)
     }
 
     override suspend fun deleteFavoriteMovieById(selectedId: Int) {
-        dao.deleteFavoriteMovieById(selectedId)
+       dao.deleteFavoriteMovieById(selectedId)
     }
 
     override suspend fun deleteAllFavoriteMovie() {
-        dao.deleteAllFavoriteMovie()
+       dao.deleteAllFavoriteMovie()
     }
 }

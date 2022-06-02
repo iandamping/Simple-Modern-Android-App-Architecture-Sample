@@ -71,9 +71,7 @@ object BindAdapters {
     @BindingAdapter("detailBookmarkImage")
     fun bindBookmarkImage(view: ImageView, data: DetailMovieState) {
         view.load(
-            if (data.data?.localId != null) {
-                R.drawable.ic_bookmarked
-            } else R.drawable.ic_unbookmark
+            if (data.isBookmarked) R.drawable.ic_bookmarked else R.drawable.ic_unbookmark
         )
     }
 
@@ -82,9 +80,11 @@ object BindAdapters {
     @BindingAdapter(value = ["app:detailState", "app:detailViewModel"], requireAll = true)
     fun bindBookmarkImageListener(view: ImageView, data: DetailMovieState,viewModel:DetailViewModel ) {
         view.setOnClickListener {
-            if (data.data?.localId != null) {
-                viewModel.removeFavoriteMovie(data.data.localId)
-            } else if (data.data !=null) viewModel.setFavoriteMovie(data.data)
+            if (data.isBookmarked) {
+                if (data.data?.localId != null) {
+                    viewModel.removeFavoriteMovie(data.data.localId)
+                }
+            } else if (data.data != null) viewModel.setFavoriteMovie(data.data)
         }
 
     }
@@ -98,7 +98,7 @@ object BindAdapters {
 
     @JvmStatic
     @BindingAdapter("detailDescriptionText")
-    fun bindDetailDescriptioonText(view: TextView, data: DetailMovieState) {
+    fun bindDetailDescriptionText(view: TextView, data: DetailMovieState) {
         view.text = data.data?.overview
     }
 

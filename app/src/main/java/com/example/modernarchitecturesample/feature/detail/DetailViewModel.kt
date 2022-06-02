@@ -21,6 +21,7 @@ class DetailViewModel @Inject constructor(
         MutableStateFlow(DetailMovieState.initialize())
     val uiState: StateFlow<DetailMovieState> = _uiState.asStateFlow()
 
+
     fun setFavoriteMovie(data: MovieDetail) {
         viewModelScope.launch {
             repository.setFavorite(data)
@@ -36,16 +37,20 @@ class DetailViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             savedStateHandle.get<Int>("movie_id")?.let {
-                repository.getSingleFavoriteCacheMovie(it).catch {
-                    _uiState.update { currentUiState ->
-                        currentUiState.copy(
-                            isLoading = false,
-                            errorMessage = it.localizedMessage
-                        )
+                try {
+                    val remoteData = repository.getDetailMovie(it)
+                    repository.getSingleFavoriteCacheMovie(it).collect { cachedData ->
+                        _uiState.update { currentUiState ->
+                            currentUiState.copy(
+                                data = cachedData ?: remoteData,
+                                isLoading = false,
+                                isBookmarked = cachedData != null
+                            )
+                        }
                     }
-                }.collect { data ->
+                } catch (e: Exception) {
                     _uiState.update { currentUiState ->
-                        currentUiState.copy(isLoading = false, data = data)
+                        currentUiState.copy(errorMessage = e.localizedMessage, isLoading = false)
                     }
                 }
             }
