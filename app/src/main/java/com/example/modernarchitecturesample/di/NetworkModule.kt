@@ -46,9 +46,9 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideApiInterface(moshi: Moshi): ApiInterface {
+    fun provideApiInterface(okHttpClient: OkHttpClient,moshi: Moshi): ApiInterface {
         return Retrofit.Builder()
-            .client(provideHttpClient())
+            .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .baseUrl(ApiInterface.baseUrl)
             .build()
