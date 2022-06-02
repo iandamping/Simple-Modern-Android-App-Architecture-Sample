@@ -12,14 +12,14 @@ import java.util.concurrent.TimeUnit
 
 object NetworkProvider {
 
-    private fun provideMoshi(): Moshi {
+    fun provideMoshi(): Moshi {
         return Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
 
     }
 
-    private fun provideOkHTTPClient(): OkHttpClient {
+    fun provideOkHTTPClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .connectTimeout(60L, TimeUnit.SECONDS)
             .writeTimeout(60L, TimeUnit.SECONDS)
@@ -36,10 +36,10 @@ object NetworkProvider {
             }.build()
     }
 
-    fun provideApiInterface(): ApiInterface {
+    fun provideApiInterface(okHttpClient: OkHttpClient, moshi: Moshi): ApiInterface {
         return Retrofit.Builder()
-            .client(provideOkHTTPClient())
-            .addConverterFactory(MoshiConverterFactory.create(provideMoshi()))
+            .client(okHttpClient)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .baseUrl(baseUrl)
             .build()
             .create(ApiInterface::class.java)

@@ -38,22 +38,10 @@ class DetailActivity : AppCompatActivity() {
             when {
                 it.data != null -> {
                     with(binding) {
-                        ivBookmark.setOnClickListener { _ ->
-                            if (it.data.localId != null) {
-                                viewModel.removeFavoriteMovie(it.data.localId)
-                            } else viewModel.setFavoriteMovie(it.data)
-                        }
-
                         ivDetail.load(it.data.backdropPath) {
                             placeholder(R.drawable.ic_placeholder)
                             error(R.drawable.ic_error)
                         }
-                        ivBookmark.load(
-                            if (it.data.localId != null) {
-                                R.drawable.ic_bookmarked
-                            } else R.drawable.ic_unbookmark
-
-                        )
                         tvTittle.text = it.data.title
                         tvDescription.text = it.data.overview
                     }
@@ -66,6 +54,19 @@ class DetailActivity : AppCompatActivity() {
                         it.errorMessage,
                         Snackbar.LENGTH_SHORT
                     ).show()
+                }
+            }
+            with(binding.ivBookmark) {
+                load(
+                    if (it.isBookmarked) R.drawable.ic_bookmarked else R.drawable.ic_unbookmark
+                )
+
+                setOnClickListener { _ ->
+                    if (it.isBookmarked) {
+                        if (it.data?.localId != null) {
+                            viewModel.removeFavoriteMovie(it.data.localId)
+                        }
+                    } else if (it.data != null) viewModel.setFavoriteMovie(it.data)
                 }
             }
             binding.detailProgressCircular.isVisible = it.isLoading

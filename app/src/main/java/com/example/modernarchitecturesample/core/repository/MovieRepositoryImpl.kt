@@ -41,17 +41,8 @@ class MovieRepositoryImpl(
         return remoteSource.getDetailMovie(movieId).mapDetailMovieToRepository()
     }
 
-    override fun getSingleFavoriteCacheMovie(movieId:Int): Flow<MovieDetail> {
-        return favoriteLocalSource.loadFavoriteMovie().map {
-            if (it.isEmpty()){
-                getDetailMovie(movieId)
-            } else {
-                val data = it.firstOrNull { cached -> cached.favoriteMovieId == movieId }
-                if (data!=null){
-                    data.mapToUi()
-                } else getDetailMovie(movieId)
-            }
-        }
+    override fun getSingleFavoriteCacheMovie(movieId:Int): Flow<MovieDetail?> {
+        return favoriteLocalSource.loadSingleFavoriteMovie(movieId).map { it?.mapToUi() }
     }
 
     override suspend fun setFavorite(data: MovieDetail) {

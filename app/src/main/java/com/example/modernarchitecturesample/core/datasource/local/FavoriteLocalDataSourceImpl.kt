@@ -9,6 +9,10 @@ class FavoriteLocalDataSourceImpl(private val dao: FavoriteMovieDao) : FavoriteL
         return dao.loadFavoriteMovie()
     }
 
+    override fun loadSingleFavoriteMovie(selectedId: Int): Flow<FavoriteMovieEntity?> {
+        return dao.loadSingleFavoriteMovie(selectedId)
+    }
+
     override suspend fun insertFavoriteMovie(data: FavoriteMovieEntity) {
         dao.insertFavoriteMovie(data)
     }

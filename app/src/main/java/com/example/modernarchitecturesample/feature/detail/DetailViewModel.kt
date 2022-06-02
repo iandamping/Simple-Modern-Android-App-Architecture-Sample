@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.modernarchitecturesample.core.datasource.model.MovieDetail
 import com.example.modernarchitecturesample.core.repository.MovieRepository
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class DetailViewModel(
@@ -13,9 +16,11 @@ class DetailViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+
     private val _uiState: MutableStateFlow<DetailMovieState> =
         MutableStateFlow(DetailMovieState.initialize())
     val uiState: StateFlow<DetailMovieState> = _uiState.asStateFlow()
+
 
     fun setFavoriteMovie(data: MovieDetail) {
         viewModelScope.launch {
@@ -32,16 +37,20 @@ class DetailViewModel(
     init {
         viewModelScope.launch {
             savedStateHandle.get<Int>("movie_id")?.let {
-                repository.getSingleFavoriteCacheMovie(it).catch {
-                    _uiState.update { currentUiState ->
-                        currentUiState.copy(
-                            isLoading = false,
-                            errorMessage = it.localizedMessage
-                        )
+                try {
+                    val remoteData = repository.getDetailMovie(it)
+                    repository.getSingleFavoriteCacheMovie(it).collect { cachedData ->
+                        _uiState.update { currentUiState ->
+                            currentUiState.copy(
+                                data = cachedData ?: remoteData,
+                                isLoading = false,
+                                isBookmarked = cachedData != null
+                            )
+                        }
                     }
-                }.collect { data ->
+                } catch (e: Exception) {
                     _uiState.update { currentUiState ->
-                        currentUiState.copy(isLoading = false, data = data)
+                        currentUiState.copy(errorMessage = e.localizedMessage, isLoading = false)
                     }
                 }
             }

@@ -8,7 +8,9 @@ import com.example.modernarchitecturesample.core.datasource.local.LocalDataSourc
 import com.example.modernarchitecturesample.core.datasource.local.db.DatabaseProvider
 import com.example.modernarchitecturesample.core.datasource.network.RemoteDataSource
 import com.example.modernarchitecturesample.core.datasource.network.RemoteDataSourceImpl
-import com.example.modernarchitecturesample.core.datasource.network.rest.NetworkProvider
+import com.example.modernarchitecturesample.core.datasource.network.rest.NetworkProvider.provideApiInterface
+import com.example.modernarchitecturesample.core.datasource.network.rest.NetworkProvider.provideMoshi
+import com.example.modernarchitecturesample.core.datasource.network.rest.NetworkProvider.provideOkHTTPClient
 import com.example.modernarchitecturesample.core.datasource.network.rest.NetworkUtilProvider
 import com.example.modernarchitecturesample.core.repository.MovieRepository
 import com.example.modernarchitecturesample.core.repository.MovieRepositoryImpl
@@ -16,7 +18,12 @@ import com.example.modernarchitecturesample.core.repository.MovieRepositoryImpl
 class DataProvider(private val context: Context) {
 
     private fun provideRemoteDatasource(): RemoteDataSource {
-        return RemoteDataSourceImpl(NetworkProvider.provideApiInterface())
+        return RemoteDataSourceImpl(
+            provideApiInterface(
+                okHttpClient = provideOkHTTPClient(),
+                moshi = provideMoshi()
+            )
+        )
     }
 
     private fun provideCacheDataSource(): LocalDataSource {
