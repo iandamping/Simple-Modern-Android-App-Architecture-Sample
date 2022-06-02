@@ -122,6 +122,9 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieAdapterListener {
                             ).show()
                         }
                     } else {
+                        if (progressBar.isVisible) {
+                            progressBar.visibility = View.GONE
+                        }
                         Snackbar.make(
                             this@MainActivity,
                             mainConstraintLayout,
