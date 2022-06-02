@@ -36,7 +36,7 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
         initView()
-        getDetailMovie()
+        observeUiState()
     }
 
 
@@ -49,23 +49,10 @@ class DetailActivity : AppCompatActivity() {
         tvDescription = findViewById(R.id.tvDescription)
     }
 
-    private fun getDetailMovie() {
+    private fun observeUiState() {
         viewModel.uiState.launchAndCollectIn(this, Lifecycle.State.STARTED) {
             when {
                 it.data != null -> {
-                    favoriteImageView.setOnClickListener { _ ->
-                        if (it.data.localId != null) {
-                            viewModel.removeFavoriteMovie(it.data.localId)
-                        } else viewModel.setFavoriteMovie(it.data)
-                    }
-
-                    favoriteImageView.load(
-                        if (it.data.localId != null) {
-                            R.drawable.ic_bookmarked
-                        } else R.drawable.ic_unbookmark
-
-                    )
-
                     tvDescription.text = it.data.overview
                     tvTittle.text = it.data.title
                     detailImageView.load(it.data.backdropPath) {
@@ -82,7 +69,24 @@ class DetailActivity : AppCompatActivity() {
                     ).show()
                 }
             }
+
+            with(favoriteImageView) {
+                load(
+                    if (it.isBookmarked) R.drawable.ic_bookmarked else R.drawable.ic_unbookmark
+                )
+
+                setOnClickListener { _ ->
+                    if (it.isBookmarked) {
+                        if (it.data?.localId != null) {
+                            viewModel.removeFavoriteMovie(it.data.localId)
+                        }
+                    } else if (it.data != null) viewModel.setFavoriteMovie(it.data)
+                }
+            }
+
             progressBar.isVisible = it.isLoading
         }
     }
+
+
 }

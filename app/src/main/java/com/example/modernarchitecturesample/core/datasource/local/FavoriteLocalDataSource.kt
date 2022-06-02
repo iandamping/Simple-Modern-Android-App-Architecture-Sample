@@ -7,6 +7,8 @@ interface FavoriteLocalDataSource {
 
     fun loadFavoriteMovie(): Flow<List<FavoriteMovieEntity>>
 
+    fun loadSingleFavoriteMovie(selectedId: Int): Flow<FavoriteMovieEntity?>
+
     suspend fun insertFavoriteMovie(data: FavoriteMovieEntity)
 
     suspend fun deleteFavoriteMovieById(selectedId: Int)

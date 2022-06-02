@@ -12,6 +12,9 @@ interface FavoriteMovieDao {
     @Query("SELECT * FROM fav_movie_table")
     fun loadFavoriteMovie(): Flow<List<FavoriteMovieEntity>>
 
+    @Query("SELECT * FROM fav_movie_table WHERE favorite_movie_id = :selectedId")
+    fun loadSingleFavoriteMovie(selectedId: Int): Flow<FavoriteMovieEntity?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavoriteMovie(data: FavoriteMovieEntity)
 
